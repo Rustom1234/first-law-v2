@@ -104,6 +104,10 @@
 
 .dispatch-track {
   will-change: transform;
+  /* The viewport mask above fades the top and bottom ~6% to transparent; without this
+   * padding the first line starts inside the top fade zone and reads as blurry. */
+  padding-top: 1.8rem;
+  padding-bottom: 1.5rem;
 }
 
 .dispatch-item {
