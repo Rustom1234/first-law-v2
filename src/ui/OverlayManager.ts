@@ -8,10 +8,17 @@ import type {
   Section,
 } from '../content/types';
 import { opacityFor } from './fade';
+import { clamp } from '../lib/math';
 
 interface TrackedSection {
   section: Section;
   el: HTMLElement;
+}
+
+interface ScrollTrack {
+  section: Section;
+  viewport: HTMLElement;
+  track: HTMLElement;
 }
 
 function el<K extends keyof HTMLElementTagNameMap>(
@@ -37,6 +44,7 @@ function initials(name: string): string {
 export class OverlayManager {
   private readonly container: HTMLElement;
   private readonly tracked: TrackedSection[] = [];
+  private readonly scrollTracks: ScrollTrack[] = [];
 
   constructor(container: HTMLElement) {
     this.container = container;
@@ -59,6 +67,25 @@ export class OverlayManager {
       card.style.pointerEvents = interactive ? 'auto' : 'none';
       card.setAttribute('aria-hidden', interactive ? 'false' : 'true');
     }
+
+    // One scroll gesture drives both the journey and any long list: rather than a nested
+    // scrollbar, the list's own position is a direct function of progress within its chapter's band.
+    for (const { section, viewport, track } of this.scrollTracks) {
+      const span = section.end - section.start;
+      const t = span > 0 ? clamp((progress - section.start) / span, 0, 1) : 0;
+      const overflow = Math.max(0, track.scrollHeight - viewport.clientHeight);
+      track.style.transform = `translateY(${-overflow * t}px)`;
+    }
+  }
+
+  /** Wraps content that may be taller than its card in a clipped viewport + a track that
+   * this.update() translates directly from scroll progress, instead of overflow:auto. */
+  private buildScrollWrapper(section: Section, trackClassName: string): { viewport: HTMLElement; track: HTMLElement } {
+    const viewport = el('div', 'dispatch-viewport');
+    const track = el('div', trackClassName);
+    viewport.appendChild(track);
+    this.scrollTracks.push({ section, viewport, track });
+    return { viewport, track };
   }
 
   private buildCard(resume: ResumeData, section: Section): HTMLElement {
@@ -77,13 +104,13 @@ export class OverlayManager {
         this.renderAbout(body, resume.profile);
         break;
       case 'experience':
-        this.renderExperience(body, resume.experience);
+        this.renderExperience(body, section, resume.experience);
         break;
       case 'projects':
-        this.renderProjects(body, resume.projects);
+        this.renderProjects(body, section, resume.projects);
         break;
       case 'education':
-        this.renderEducation(body, resume.education);
+        this.renderEducation(body, section, resume.education);
         break;
       case 'paper':
         this.renderPaper(body, resume.paper);
@@ -125,8 +152,8 @@ export class OverlayManager {
     body.appendChild(layout);
   }
 
-  private renderExperience(body: HTMLElement, entries: ExperienceEntry[]): void {
-    const list = el('div', 'dispatch-scroll');
+  private renderExperience(body: HTMLElement, section: Section, entries: ExperienceEntry[]): void {
+    const { viewport, track: list } = this.buildScrollWrapper(section, 'dispatch-track');
     for (const entry of entries) {
       const item = el('article', 'dispatch-item dispatch-item--with-logo');
 
@@ -150,11 +177,11 @@ export class OverlayManager {
 
       list.appendChild(item);
     }
-    body.appendChild(list);
+    body.appendChild(viewport);
   }
 
-  private renderProjects(body: HTMLElement, entries: ProjectEntry[]): void {
-    const grid = el('div', 'trophy-grid');
+  private renderProjects(body: HTMLElement, section: Section, entries: ProjectEntry[]): void {
+    const { viewport, track: grid } = this.buildScrollWrapper(section, 'trophy-grid');
     for (const entry of entries) {
       const wrapper = entry.link ? el('a', 'trophy-card trophy-card--link') : el('article', 'trophy-card');
       if (entry.link && wrapper instanceof HTMLAnchorElement) {
@@ -186,14 +213,24 @@ export class OverlayManager {
 
       grid.appendChild(wrapper);
     }
-    body.appendChild(grid);
+    body.appendChild(viewport);
   }
 
-  private renderEducation(body: HTMLElement, entries: EducationEntry[]): void {
-    const list = el('div', 'dispatch-scroll');
+  private renderEducation(body: HTMLElement, section: Section, entries: EducationEntry[]): void {
+    const { viewport, track: list } = this.buildScrollWrapper(section, 'dispatch-track');
     entries.forEach((entry, i) => {
       const item = el('article', 'dispatch-item dispatch-item--trial');
-      item.appendChild(el('span', 'dispatch-item__trial-mark', String(i + 1)));
+
+      if (entry.logo) {
+        const logo = document.createElement('img');
+        logo.className = 'dispatch-item__logo dispatch-item__logo--trial';
+        logo.src = entry.logo;
+        logo.alt = entry.org;
+        item.appendChild(logo);
+      } else {
+        item.appendChild(el('span', 'dispatch-item__trial-mark', String(i + 1)));
+      }
+
       const titleLine = el('p', 'dispatch-item__title', entry.title);
       titleLine.appendChild(el('span', 'dispatch-item__period', entry.period));
       item.appendChild(titleLine);
@@ -222,12 +259,21 @@ export class OverlayManager {
 
       list.appendChild(item);
     });
-    body.appendChild(list);
+    body.appendChild(viewport);
   }
 
   private renderPaper(body: HTMLElement, paper: PaperEntry): void {
     const relic = el('div', 'relic-card');
-    relic.appendChild(el('div', 'relic-seal'));
+
+    if (paper.image) {
+      const graph = document.createElement('img');
+      graph.className = 'relic-graph';
+      graph.src = paper.image;
+      graph.alt = `Figure from ${paper.title}`;
+      relic.appendChild(graph);
+    } else {
+      relic.appendChild(el('div', 'relic-seal'));
+    }
 
     const wrapper = paper.link ? el('a', 'relic-body relic-body--link') : el('div', 'relic-body');
     if (paper.link && wrapper instanceof HTMLAnchorElement) {
@@ -259,5 +305,12 @@ export class OverlayManager {
       list.appendChild(anchor);
     }
     body.appendChild(list);
+
+    if (profile.resumeUrl) {
+      const download = el('a', 'contact-resume-link', 'Download Resume');
+      download.href = profile.resumeUrl;
+      download.download = '';
+      body.appendChild(download);
+    }
   }
 }

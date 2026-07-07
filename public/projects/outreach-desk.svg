@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 250" width="400" height="250">
+  <defs>
+    <linearGradient id="od-bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1a1a17"/>
+      <stop offset="1" stop-color="#14130f"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="400" height="250" fill="url(#od-bg)"/>
+
+  <!-- faint horizon line -->
+  <line x1="0" y1="205" x2="400" y2="205" stroke="#2a2822" stroke-width="1"/>
+
+  <!-- pipeline connector -->
+  <line x1="60" y1="125" x2="340" y2="125" stroke="#6b6a63" stroke-width="1.5" stroke-dasharray="3 5"/>
+
+  <!-- arrowheads between stages -->
+  <path d="M138 125 l-8 -5 v10 z" fill="#a79c86"/>
+  <path d="M218 125 l-8 -5 v10 z" fill="#a79c86"/>
+  <path d="M298 125 l-8 -5 v10 z" fill="#a79c86"/>
+
+  <!-- stage 1: Front Desk (a small desk/inbox tray) -->
+  <g transform="translate(60,125)">
+    <rect x="-22" y="-16" width="44" height="32" rx="3" fill="none" stroke="#b7ab8c" stroke-width="1.5"/>
+    <line x1="-22" y1="-2" x2="22" y2="-2" stroke="#b7ab8c" stroke-width="1.5"/>
+    <circle cx="0" cy="8" r="2" fill="#d9b98c"/>
+  </g>
+
+  <!-- stage 2: Scout (a magnifier over a page) -->
+  <g transform="translate(140,125)">
+    <rect x="-14" y="-18" width="28" height="34" rx="2" fill="none" stroke="#9fb0b8" stroke-width="1.4"/>
+    <line x1="-8" y1="-10" x2="8" y2="-10" stroke="#9fb0b8" stroke-width="1"/>
+    <line x1="-8" y1="-4" x2="8" y2="-4" stroke="#9fb0b8" stroke-width="1"/>
+    <circle cx="10" cy="10" r="8" fill="none" stroke="#d9b98c" stroke-width="1.6"/>
+    <line x1="16" y1="16" x2="23" y2="23" stroke="#d9b98c" stroke-width="1.6" stroke-linecap="round"/>
+  </g>
+
+  <!-- stage 3: Drafter (a pen over lines of text) -->
+  <g transform="translate(220,125)">
+    <rect x="-18" y="-18" width="36" height="34" rx="2" fill="none" stroke="#b7ab8c" stroke-width="1.4"/>
+    <line x1="-11" y1="-9" x2="11" y2="-9" stroke="#b7ab8c" stroke-width="1"/>
+    <line x1="-11" y1="-2" x2="6" y2="-2" stroke="#b7ab8c" stroke-width="1"/>
+    <line x1="-11" y1="5" x2="9" y2="5" stroke="#b7ab8c" stroke-width="1"/>
+    <path d="M6 12 l14 -14 4 4 -14 14 -6 2z" fill="#d9b98c"/>
+  </g>
+
+  <!-- stage 4: Outbox (an envelope, sent) -->
+  <g transform="translate(300,125)">
+    <rect x="-22" y="-15" width="44" height="30" rx="2" fill="none" stroke="#e7e5df" stroke-width="1.6"/>
+    <path d="M-22 -15 L0 3 L22 -15" fill="none" stroke="#e7e5df" stroke-width="1.6"/>
+    <path d="M28 -2 h14 M36 -8 l6 6 -6 6" fill="none" stroke="#d9b98c" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- stage labels -->
+  <g fill="#8f8a7c" font-family="'Courier New', monospace" font-size="9" letter-spacing="1" text-anchor="middle">
+    <text x="60" y="172">FRONT DESK</text>
+    <text x="140" y="172">SCOUT</text>
+    <text x="220" y="172">DRAFTER</text>
+    <text x="300" y="172">OUTBOX</text>
+  </g>
+</svg>

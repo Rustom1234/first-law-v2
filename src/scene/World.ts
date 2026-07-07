@@ -17,6 +17,7 @@ import { Ambient } from './Ambient';
 import { CricketBatter } from './CricketBatter';
 import { Martini } from './Martini';
 import { Library } from './Library';
+import { GhostlyResume } from './GhostlyResume';
 import { SECTIONS } from '../content/sections';
 import type { Section } from '../content/types';
 
@@ -43,6 +44,7 @@ export class World {
   readonly cricketBatter: CricketBatter;
   readonly martini: Martini;
   readonly library: Library;
+  readonly ghostlyResume: GhostlyResume;
 
   constructor(settings: QualitySettings, sections: Section[]) {
     this.terrain = new Terrain(1337, settings.terrainSegments);
@@ -98,9 +100,25 @@ export class World {
 
     const paperSection = SECTIONS.find((s) => s.id === 'paper')!;
     this.library = new Library([paperSection.start, paperSection.end]);
-    const archiveWp = JOURNEY_WAYPOINTS[7];
-    this.library.placeAt(archiveWp.x + 18, archiveWp.z - 6, heightAt, Math.PI * 0.2);
+    const paperWp = JOURNEY_WAYPOINTS[8];
+    this.library.placeAt(paperWp.x + 18, paperWp.z - 6, heightAt, Math.PI * 0.2);
     this.scene.add(this.library.group);
+
+    // Positioned beyond the summit ridge so the terrain in front genuinely occludes it
+    // (real depth-tested 3D, not a CSS trick) until the rise animation lifts it into view.
+    // The camera pitches steeply downward at the summit (raking final shot), so this is
+    // calibrated against the actual sightline at that point, not just terrain height.
+    const summit = JOURNEY_WAYPOINTS[JOURNEY_WAYPOINTS.length - 1];
+    const resumeX = summit.x;
+    const resumeZ = summit.z - 30;
+    const contactSection = SECTIONS.find((s) => s.id === 'contact')!;
+    this.ghostlyResume = new GhostlyResume(
+      [contactSection.start, contactSection.start + (contactSection.end - contactSection.start) * 0.6],
+      -25,
+      30,
+    );
+    this.ghostlyResume.placeAt(resumeX, resumeZ);
+    this.scene.add(this.ghostlyResume.group);
   }
 
   private populateWarriors(settings: QualitySettings): void {
@@ -165,7 +183,7 @@ export class World {
    * on purpose (content and scene stay independent): 3 reads fine whether you list 2 or 3 entries. */
   private placeWaystones(): void {
     const heightAt = (x: number, z: number) => this.terrain.heightAt(x, z);
-    const wp = JOURNEY_WAYPOINTS[8];
+    const wp = JOURNEY_WAYPOINTS[3];
     const offsets = [-14, 0, 14];
     for (const dx of offsets) {
       const stone = createWaystone();
@@ -192,15 +210,15 @@ export class World {
       {
         name: 'Captain Voss',
         line: 'I’ve buried better men for worse reasons. This one earned his rank.',
-        x: wp[3].x - 22,
-        z: wp[3].z + 6,
+        x: wp[5].x - 22,
+        z: wp[5].z + 6,
         facing: -Math.PI * 0.3,
       },
       {
         name: 'Maer, the Loremaster',
         line: 'Trials are not passed. They are survived, and remembered.',
-        x: wp[7].x - 26,
-        z: wp[7].z - 5,
+        x: wp[8].x - 26,
+        z: wp[8].z - 5,
         facing: Math.PI * 0.5,
       },
       {
@@ -240,6 +258,7 @@ export class World {
     this.cricketBatter.update(progress);
     this.martini.update(progress, elapsed);
     this.library.update(progress);
+    this.ghostlyResume.update(progress);
     return blend;
   }
 }

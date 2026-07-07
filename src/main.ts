@@ -31,7 +31,6 @@ function boot(): void {
     runeRoot: requireEl<HTMLDivElement>('rune-root'),
     toastRoot: requireEl<HTMLDivElement>('toast-root'),
     audioRoot: requireEl<HTMLDivElement>('audio-root'),
-    resumeScrollRoot: requireEl<HTMLDivElement>('resume-scroll-root'),
   };
 
   const app = new App(dom, tier, reducedMotion);

@@ -15,11 +15,10 @@ import { TableOfContents } from './ui/TableOfContents';
 import { CursorTrail } from './ui/CursorTrail';
 import { ChapterToast } from './ui/ChapterToast';
 import { AmbientAudio } from './ui/AmbientAudio';
-import { ResumeScroll } from './ui/ResumeScroll';
 import { resume } from './content/resume';
 import { SECTIONS } from './content/sections';
 
-const SCROLL_LENGTH_VIEWPORTS = 9.5;
+const SCROLL_LENGTH_VIEWPORTS = 11;
 
 export interface AppDom {
   canvas: HTMLCanvasElement;
@@ -29,7 +28,6 @@ export interface AppDom {
   runeRoot: HTMLElement;
   toastRoot: HTMLElement;
   audioRoot: HTMLElement;
-  resumeScrollRoot: HTMLElement;
 }
 
 export class App {
@@ -44,7 +42,6 @@ export class App {
   private readonly progressUI: Progress;
   private readonly cursorTrail: CursorTrail | null;
   private readonly chapterToast: ChapterToast;
-  private readonly resumeScroll: ResumeScroll;
   private readonly loop: Loop;
   private readonly stopResize: () => void;
 
@@ -76,7 +73,6 @@ export class App {
     this.progressUI = new Progress(dom.runeRoot, SECTIONS);
     this.chapterToast = new ChapterToast(dom.toastRoot);
     new AmbientAudio(dom.audioRoot);
-    this.resumeScroll = new ResumeScroll(dom.resumeScrollRoot, resume.profile);
 
     // Ember trail is a nice-to-have, not core functionality: skip it on the low tier
     // (mobile/low-power) rather than spend cursor-tracking cycles there.
@@ -94,7 +90,6 @@ export class App {
     this.toc.update(progress);
     this.progressUI.update(progress);
     this.chapterToast.update(progress, SECTIONS);
-    this.resumeScroll.update(progress);
 
     if (this.composer) {
       this.composer.render();

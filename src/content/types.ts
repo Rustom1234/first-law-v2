@@ -29,6 +29,7 @@ export interface ProjectEntry {
 export interface EducationEntry {
   title: string;
   org: string;
+  logo?: string;
   period: string;
   blurb: string;
   gpa?: string;
@@ -42,6 +43,7 @@ export interface PaperEntry {
   authors: string;
   abstract: string;
   link?: string;
+  image?: string;
 }
 
 export interface ResumeData {
