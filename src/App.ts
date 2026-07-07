@@ -13,6 +13,7 @@ import { OverlayManager } from './ui/OverlayManager';
 import { Progress } from './ui/Progress';
 import { TableOfContents } from './ui/TableOfContents';
 import { CursorTrail } from './ui/CursorTrail';
+import { SwipeHint } from './ui/SwipeHint';
 import { ChapterToast } from './ui/ChapterToast';
 import { AmbientAudio } from './ui/AmbientAudio';
 import { resume } from './content/resume';
@@ -77,6 +78,10 @@ export class App {
     // Ember trail is a nice-to-have, not core functionality: skip it on the low tier
     // (mobile/low-power) rather than spend cursor-tracking cycles there.
     this.cursorTrail = tier === 'high' && !reducedMotion ? new CursorTrail() : null;
+
+    // Touch devices have no visible scrollbar, so a brief one-time hint teaches the
+    // swipe-to-scroll gesture. It self-gates to coarse pointers and no-ops otherwise.
+    if (!reducedMotion) new SwipeHint();
 
     this.loop = new Loop((dt, elapsed) => this.tick(dt, elapsed));
   }

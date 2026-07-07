@@ -47,14 +47,14 @@ export class GhostlyResume {
       const material = new THREE.SpriteMaterial({
         map: texture,
         transparent: true,
-        opacity: 0.15,
+        opacity: 0.08,
         depthWrite: false,
         fog: false,
       });
 
       this.sprite = new THREE.Sprite(material);
       const aspect = canvas.width / canvas.height;
-      const height = 34;
+      const height = 14;
       this.sprite.scale.set(height * aspect, height, 1);
       this.sprite.position.y = this.baseY;
       this.group.add(this.sprite);
@@ -72,6 +72,6 @@ export class GhostlyResume {
     const span = this.rangeEnd - this.rangeStart;
     const t = span > 0 ? clamp((progress - this.rangeStart) / span, 0, 1) : 0;
     this.sprite.position.y = this.baseY + t * this.riseHeight;
-    (this.sprite.material as THREE.SpriteMaterial).opacity = 0.1 + t * 0.35;
+    (this.sprite.material as THREE.SpriteMaterial).opacity = 0.06 + t * 0.12;
   }
 }

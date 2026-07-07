@@ -104,19 +104,14 @@ export class World {
     this.library.placeAt(paperWp.x + 18, paperWp.z - 6, heightAt, Math.PI * 0.2);
     this.scene.add(this.library.group);
 
-    // Positioned beyond the summit ridge so the terrain in front genuinely occludes it
-    // (real depth-tested 3D, not a CSS trick) until the rise animation lifts it into view.
-    // The camera pitches steeply downward at the summit (raking final shot), so this is
-    // calibrated against the actual sightline at that point, not just terrain height.
+    // Positioned just short of the summit ridge (not past it) so the terrain the camera is
+    // still climbing over genuinely occludes it (real depth-tested 3D, not a CSS trick) until
+    // the rise animation lifts it into view near the very end of the contact section, close
+    // to where the Download Resume button and contact card sit on screen.
     const summit = JOURNEY_WAYPOINTS[JOURNEY_WAYPOINTS.length - 1];
     const resumeX = summit.x;
-    const resumeZ = summit.z - 30;
-    const contactSection = SECTIONS.find((s) => s.id === 'contact')!;
-    this.ghostlyResume = new GhostlyResume(
-      [contactSection.start, contactSection.start + (contactSection.end - contactSection.start) * 0.6],
-      -25,
-      30,
-    );
+    const resumeZ = summit.z - 22;
+    this.ghostlyResume = new GhostlyResume([0.88, 0.99], -40, 35);
     this.ghostlyResume.placeAt(resumeX, resumeZ);
     this.scene.add(this.ghostlyResume.group);
   }

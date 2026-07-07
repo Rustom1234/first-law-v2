@@ -45,9 +45,14 @@ export class OverlayManager {
   private readonly container: HTMLElement;
   private readonly tracked: TrackedSection[] = [];
   private readonly scrollTracks: ScrollTrack[] = [];
+  private readonly mobileQuery = window.matchMedia('(max-width: 720px)');
+  private isMobile = this.mobileQuery.matches;
 
   constructor(container: HTMLElement) {
     this.container = container;
+    this.mobileQuery.addEventListener('change', (e) => {
+      this.isMobile = e.matches;
+    });
   }
 
   build(resume: ResumeData, sections: Section[]): void {
@@ -59,20 +64,43 @@ export class OverlayManager {
   }
 
   update(progress: number): void {
-    for (const { section, el: card } of this.tracked) {
-      const opacity = opacityFor(progress, section);
+    const opacities = this.tracked.map(({ section }) => opacityFor(progress, section));
+
+    // On narrow viewports every card occupies the same full-width slot (see the 720px
+    // breakpoint in overlay.css), so the normal cross-fade leaves two sections' text
+    // stacked mid-transition. Only the section closest to full visibility stays shown.
+    let visibleIndex = -1;
+    if (this.isMobile) {
+      let max = -1;
+      opacities.forEach((o, i) => {
+        if (o > max) {
+          max = o;
+          visibleIndex = i;
+        }
+      });
+    }
+
+    this.tracked.forEach(({ el: card }, i) => {
+      const opacity = this.isMobile && i !== visibleIndex ? 0 : opacities[i];
       card.style.opacity = opacity.toFixed(3);
-      card.style.transform = `translateY(${(1 - opacity) * 16}px)`;
+      // A custom property, not style.transform: the positioned card variants (approach/
+      // about/contact/projects/paper) each carry their own centering transform in CSS, and
+      // composing translateY() here would overwrite it instead of stacking with it.
+      card.style.setProperty('--fade-y', `${(1 - opacity) * 16}px`);
       const interactive = opacity > 0.05;
       card.style.pointerEvents = interactive ? 'auto' : 'none';
       card.setAttribute('aria-hidden', interactive ? 'false' : 'true');
-    }
+    });
 
     // One scroll gesture drives both the journey and any long list: rather than a nested
     // scrollbar, the list's own position is a direct function of progress within its chapter's band.
+    // The track only moves once the card has fully faded in and finishes moving before fade-out
+    // starts, so the first entry is never partway scrolled off when the card becomes visible.
     for (const { section, viewport, track } of this.scrollTracks) {
-      const span = section.end - section.start;
-      const t = span > 0 ? clamp((progress - section.start) / span, 0, 1) : 0;
+      const activeSpan = section.end - section.start - section.fadeIn - section.fadeOut;
+      const t = activeSpan > 0
+        ? clamp((progress - (section.start + section.fadeIn)) / activeSpan, 0, 1)
+        : 0;
       const overflow = Math.max(0, track.scrollHeight - viewport.clientHeight);
       track.style.transform = `translateY(${-overflow * t}px)`;
     }
@@ -231,27 +259,35 @@ export class OverlayManager {
         item.appendChild(el('span', 'dispatch-item__trial-mark', String(i + 1)));
       }
 
-      const titleLine = el('p', 'dispatch-item__title', entry.title);
+      // School name is the bold headline, the program/degree sits under it (swapped from
+      // the field names, since entry.org holds the school and entry.title the program).
+      const titleLine = el('p', 'dispatch-item__title', entry.org);
       titleLine.appendChild(el('span', 'dispatch-item__period', entry.period));
       item.appendChild(titleLine);
-      item.appendChild(el('p', 'dispatch-item__org', entry.org));
+      item.appendChild(el('p', 'dispatch-item__org', entry.title));
       item.appendChild(el('p', 'dispatch-item__blurb', entry.blurb));
 
-      const hasDetails = Boolean(entry.gpa) || Boolean(entry.coursework?.length);
-      if (hasDetails) {
+      if (entry.gpa) item.appendChild(el('p', 'dispatch-item__gpa dispatch-item__gpa--visible', `GPA: ${entry.gpa}`));
+
+      const hasDropdown = Boolean(entry.activities?.length) || Boolean(entry.coursework?.length);
+      if (hasDropdown) {
         const details = el('div', 'dispatch-item__details');
-        if (entry.gpa) details.appendChild(el('p', 'dispatch-item__gpa', `GPA: ${entry.gpa}`));
+        if (entry.activities?.length) {
+          const activitiesList = el('ul', 'dispatch-item__coursework');
+          for (const activity of entry.activities) activitiesList.appendChild(el('li', undefined, activity));
+          details.appendChild(activitiesList);
+        }
         if (entry.coursework?.length) {
           const courseworkList = el('ul', 'dispatch-item__coursework');
           for (const course of entry.coursework) courseworkList.appendChild(el('li', undefined, course));
           details.appendChild(courseworkList);
         }
 
-        const toggle = el('button', 'dispatch-item__toggle', 'Coursework & GPA ▾');
+        const toggle = el('button', 'dispatch-item__toggle', 'Coursework & Activities ▾');
         toggle.type = 'button';
         toggle.addEventListener('click', () => {
           const isOpen = details.classList.toggle('dispatch-item__details--open');
-          toggle.textContent = isOpen ? 'Coursework & GPA ▴' : 'Coursework & GPA ▾';
+          toggle.textContent = isOpen ? 'Coursework & Activities ▴' : 'Coursework & Activities ▾';
         });
         item.appendChild(toggle);
         item.appendChild(details);

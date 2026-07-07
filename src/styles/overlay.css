@@ -12,6 +12,9 @@
   backdrop-filter: blur(2px);
   transition: opacity 0.15s linear, border-color 0.4s ease;
   will-change: opacity, transform;
+  /* OverlayManager.update() only ever sets --fade-y; each positioned variant below composes
+   * this into its own centering transform instead of the JS overwriting style.transform. */
+  transform: translateY(var(--fade-y, 0));
 }
 
 .dispatch-card--approach,
@@ -21,7 +24,7 @@
   bottom: auto;
   top: 50%;
   transform-origin: center;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) translateY(var(--fade-y, 0));
   text-align: center;
   max-width: 36rem;
   border-left: 1px solid rgba(231, 229, 223, 0.18);
@@ -32,7 +35,7 @@
   left: 50%;
   bottom: 2rem;
   transform-origin: center;
-  transform: translate(-50%, 0);
+  transform: translate(-50%, 0) translateY(var(--fade-y, 0));
   max-width: min(70rem, 86vw);
   width: 86vw;
 }
@@ -42,8 +45,10 @@
   bottom: auto;
   top: 50%;
   transform-origin: center;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) translateY(var(--fade-y, 0));
   max-width: 34rem;
+  max-height: 80vh;
+  overflow-y: auto;
   text-align: center;
 }
 
@@ -215,6 +220,12 @@
   color: #dcd8cf;
 }
 
+.dispatch-item__gpa--visible {
+  margin: -0.15rem 0 0.5rem;
+  font-weight: 600;
+  color: var(--region-accent);
+}
+
 .dispatch-item__coursework {
   margin: 0.3rem 0 0;
   padding-left: 1.1rem;
@@ -329,7 +340,7 @@
 
 .trophy-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
   will-change: transform;
 }
@@ -607,6 +618,74 @@
   transform: translateY(0);
 }
 
+/* Swipe hint (touch only, first visit) */
+
+.swipe-hint {
+  position: fixed;
+  left: 50%;
+  bottom: 2.6rem;
+  z-index: 15;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  transform: translateX(-50%);
+  pointer-events: none;
+  opacity: 0.85;
+  transition: opacity 0.5s ease;
+}
+
+.swipe-hint--dismissed {
+  opacity: 0;
+}
+
+.swipe-hint__track {
+  position: relative;
+  width: 2px;
+  height: 2.4rem;
+  background: rgba(231, 229, 223, 0.25);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.swipe-hint__dot {
+  position: absolute;
+  left: -3px;
+  bottom: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--region-accent);
+  animation: swipe-hint-rise 1.8s ease-in-out 3;
+}
+
+.swipe-hint__label {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #cfcabf;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+}
+
+@keyframes swipe-hint-rise {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-2.4rem);
+    opacity: 0;
+  }
+}
+
 /* Ambient audio toggle */
 
 .ambient-audio {
@@ -731,11 +810,23 @@
     max-width: none;
   }
 
+  /* Desktop centers these with top:50% + translate(-50%,-50%); at this width the card
+   * is already stretched full-width and anchored to the bottom by the rule above, so the
+   * leftover desktop transform would just shift it half off-screen. Clear top and the
+   * centering transform, keep only the fade. */
+  .dispatch-card--approach,
+  .dispatch-card--about,
+  .dispatch-card--contact,
+  .dispatch-card--paper {
+    top: auto;
+    transform: translateY(var(--fade-y, 0));
+  }
+
   .dispatch-card--projects {
     left: 1rem;
     right: 1rem;
     width: auto;
-    transform: none;
+    transform: translateY(var(--fade-y, 0));
   }
 
   .trophy-grid {
