@@ -181,7 +181,10 @@
   width: 2.8rem;
   height: 2.8rem;
   border-radius: 6px;
-  object-fit: cover;
+  object-fit: contain;
+  box-sizing: border-box;
+  padding: 0.3rem;
+  background: #f2ede2;
   border: 1px solid rgba(231, 229, 223, 0.2);
 }
 
@@ -203,7 +206,10 @@
   width: 1.9rem;
   height: 1.9rem;
   border-radius: 50%;
-  filter: grayscale(0.3) contrast(1.1);
+  object-fit: contain;
+  box-sizing: border-box;
+  padding: 0.2rem;
+  background: #f2ede2;
 }
 
 .dispatch-item__content {
