@@ -1,6 +1,5 @@
 import type { Section } from '../content/types';
-
-const RUNES = ['ᛟ', 'ᚦ', 'ᛒ', 'ᛊ', 'ᛈ', 'ᚱ', 'ᛗ'];
+import { RUNES } from '../content/runes';
 
 export class Progress {
   private readonly fill: HTMLElement;
@@ -23,8 +22,18 @@ export class Progress {
     sections.forEach((section, i) => {
       const mark = document.createElement('span');
       mark.className = 'rune-track__mark';
-      mark.textContent = RUNES[i % RUNES.length];
       mark.title = section.heading;
+
+      const spren = document.createElement('span');
+      spren.className = 'rune-track__spren';
+      spren.style.animationDelay = `${(i * 0.7).toFixed(2)}s`;
+      mark.appendChild(spren);
+
+      const glyph = document.createElement('span');
+      glyph.className = 'rune-track__glyph';
+      glyph.textContent = RUNES[i % RUNES.length];
+      mark.appendChild(glyph);
+
       marksContainer.appendChild(mark);
       this.marks.push(mark);
     });

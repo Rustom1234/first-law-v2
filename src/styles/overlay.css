@@ -152,6 +152,76 @@
   color: #dcd8cf;
 }
 
+.dispatch-item--with-logo {
+  display: flex;
+  gap: 0.9rem;
+  align-items: flex-start;
+}
+
+.dispatch-item__logo {
+  flex: none;
+  width: 2.8rem;
+  height: 2.8rem;
+  border-radius: 6px;
+  object-fit: cover;
+  border: 1px solid rgba(231, 229, 223, 0.2);
+}
+
+.dispatch-item__logo--placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(140deg, color-mix(in srgb, var(--region-accent) 35%, #1a1a17), #1a1a17);
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--region-accent);
+}
+
+.dispatch-item__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.dispatch-item__toggle {
+  margin-top: 0.5rem;
+  background: none;
+  border: none;
+  color: var(--region-accent);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  padding: 0;
+}
+
+.dispatch-item__details {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.dispatch-item__details--open {
+  max-height: 12rem;
+}
+
+.dispatch-item__gpa {
+  margin: 0.6rem 0 0.3rem;
+  font-size: 0.95rem;
+  color: #dcd8cf;
+}
+
+.dispatch-item__coursework {
+  margin: 0.3rem 0 0;
+  padding-left: 1.1rem;
+  font-size: 0.9rem;
+  color: #cfcabf;
+}
+
+.dispatch-item__coursework li {
+  margin-bottom: 0.2rem;
+}
+
 .dispatch-links {
   display: flex;
   gap: 1.2rem;
@@ -207,6 +277,14 @@
   font-size: 2.6rem;
   font-weight: 700;
   color: var(--region-accent);
+}
+
+.about-text {
+  max-height: 55vh;
+  overflow-y: auto;
+  padding-right: 0.4rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--region-accent) transparent;
 }
 
 .about-bio {
@@ -364,28 +442,229 @@
   align-items: center;
 }
 
-/* Chronicler voice-line subtitle */
+/* Top nav / table of contents */
 
-.voice-line {
+.toc {
   position: fixed;
-  top: 2.2rem;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 12;
-  max-width: 40rem;
-  width: 90vw;
-  text-align: center;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  padding: 1rem 1.5rem;
   pointer-events: none;
 }
 
-.voice-line__text {
-  margin: 0;
-  font-style: italic;
+.toc__toggle {
+  display: none;
+  align-items: center;
+  gap: 0.6rem;
+  background: rgba(20, 19, 16, 0.82);
+  border: 1px solid var(--region-accent);
+  border-radius: 6px;
+  color: #e7e5df;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  padding: 0.5rem 0.9rem;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.toc__toggle-rune {
   font-size: 1.1rem;
-  color: rgba(231, 229, 223, 0.85);
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
-  transition: opacity 0.5s ease;
+  color: var(--region-accent);
+}
+
+.toc__list {
+  display: flex;
+  gap: 0.3rem;
+  list-style: none;
+  margin: 0;
+  padding: 0.4rem;
+  background: rgba(20, 19, 16, 0.7);
+  border: 1px solid rgba(231, 229, 223, 0.14);
+  border-radius: 8px;
+  backdrop-filter: blur(4px);
+  pointer-events: auto;
+}
+
+.toc__tab {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: none;
+  border: none;
+  border-radius: 5px;
+  color: rgba(231, 229, 223, 0.65);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  padding: 0.4rem 0.7rem;
+  cursor: pointer;
+  transition: color 0.2s ease, background-color 0.2s ease;
+  white-space: nowrap;
+}
+
+.toc__tab:hover,
+.toc__tab:focus-visible {
+  background: rgba(231, 229, 223, 0.08);
+  color: #e7e5df;
+}
+
+.toc__tab-rune {
+  font-size: 1rem;
+}
+
+.toc__tab--active {
+  color: var(--region-accent);
+  font-weight: 700;
+}
+
+@media (max-width: 860px) {
+  .toc {
+    justify-content: flex-start;
+  }
+
+  .toc__toggle {
+    display: flex;
+  }
+
+  .toc__list {
+    display: none;
+    position: absolute;
+    top: calc(100% + 0.4rem);
+    left: 1.5rem;
+    flex-direction: column;
+    max-width: calc(100vw - 3rem);
+  }
+
+  .toc--open .toc__list {
+    display: flex;
+  }
+
+  .toc__tab {
+    width: 100%;
+  }
+}
+
+/* Chapter-reached toast */
+
+.chapter-toast {
+  position: fixed;
+  top: 5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 19;
+  pointer-events: none;
+}
+
+.chapter-toast__text {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--region-accent);
+  background: rgba(20, 19, 16, 0.75);
+  border: 1px solid var(--region-accent);
+  border-radius: 20px;
+  padding: 0.4rem 1.1rem;
   opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.chapter-toast__text--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Ambient audio toggle */
+
+.ambient-audio {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 20;
+}
+
+.ambient-audio__button {
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 50%;
+  border: 1px solid rgba(231, 229, 223, 0.3);
+  background: rgba(20, 19, 16, 0.7);
+  color: rgba(231, 229, 223, 0.6);
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.ambient-audio__button--active {
+  color: var(--region-accent);
+  border-color: var(--region-accent);
+}
+
+/* Resume scroll finale */
+
+.resume-scroll {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%, 100%);
+  opacity: 0;
+  z-index: 15;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.resume-scroll__rod {
+  width: min(30rem, 80vw);
+  height: 0.9rem;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #c9a765, #7a5f2f);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.resume-scroll__body {
+  width: min(30rem, 80vw);
+  margin-top: -0.2rem;
+  padding: 2rem 2rem 2.5rem;
+  background: linear-gradient(180deg, #e9d9ad, #d8c290);
+  border-radius: 0 0 10px 10px;
+  box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.4);
+  text-align: center;
+  pointer-events: auto;
+}
+
+.resume-scroll__heading {
+  margin: 0 0 1.2rem;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #3a2e18;
+}
+
+.resume-scroll__button {
+  display: inline-block;
+  padding: 0.75rem 1.6rem;
+  background: #2a2018;
+  color: #e9d9ad;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: transform 0.15s ease;
+}
+
+.resume-scroll__button:hover,
+.resume-scroll__button:focus-visible {
+  transform: translateY(-2px);
 }
 
 .rune-track {
@@ -429,14 +708,53 @@
 }
 
 .rune-track__mark {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rune-track__glyph {
+  position: relative;
   font-size: 1.2rem;
   color: rgba(231, 229, 223, 0.3);
   transition: color 0.25s ease, text-shadow 0.25s ease;
 }
 
-.rune-track__mark--active {
+.rune-track__mark--active .rune-track__glyph {
   color: var(--region-accent);
   text-shadow: 0 0 8px var(--region-accent);
+}
+
+/* Stormlight-style spren: a small living companion glow drifting behind each rune, no text. */
+.rune-track__spren {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--region-accent) 55%, white) 0%, transparent 70%);
+  transform: translate(-50%, -50%);
+  opacity: 0.35;
+  animation: spren-drift 4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.rune-track__mark--active .rune-track__spren {
+  opacity: 0.75;
+  width: 2.1rem;
+  height: 2.1rem;
+}
+
+@keyframes spren-drift {
+  0%,
+  100% {
+    transform: translate(-60%, -55%) scale(0.9);
+  }
+  50% {
+    transform: translate(-40%, -45%) scale(1.15);
+  }
 }
 
 @media (max-width: 720px) {
@@ -464,7 +782,16 @@
     height: 36vh;
   }
 
-  .voice-line {
-    top: 1.2rem;
+  .chapter-toast {
+    top: 4.2rem;
+  }
+
+  .ambient-audio {
+    bottom: 1rem;
+    right: 1rem;
+  }
+
+  .resume-scroll__body {
+    padding: 1.4rem 1.4rem 1.8rem;
   }
 }

@@ -14,6 +14,10 @@ import { createRider } from './Cavalry';
 import { createWaystone } from './Waystones';
 import { Companions, type CompanionDef } from './Companions';
 import { Ambient } from './Ambient';
+import { CricketBatter } from './CricketBatter';
+import { Martini } from './Martini';
+import { Library } from './Library';
+import { SECTIONS } from '../content/sections';
 import type { Section } from '../content/types';
 
 const REGION_WAYPOINT_INDEX: Record<string, number> = {
@@ -21,8 +25,8 @@ const REGION_WAYPOINT_INDEX: Record<string, number> = {
   about: 1,
   north: 3,
   war: 5,
-  education: 7,
-  archive: 8,
+  archive: 7,
+  education: 8,
   parley: 10,
 };
 
@@ -36,6 +40,9 @@ export class World {
   readonly warriors: Warriors;
   readonly props: Props;
   readonly ambient: Ambient;
+  readonly cricketBatter: CricketBatter;
+  readonly martini: Martini;
+  readonly library: Library;
 
   constructor(settings: QualitySettings, sections: Section[]) {
     this.terrain = new Terrain(1337, settings.terrainSegments);
@@ -73,6 +80,27 @@ export class World {
     this.placeWaystones();
     this.placeCompanions();
     this.buildWorldLabels(sections);
+
+    const heightAt = (x: number, z: number) => this.terrain.heightAt(x, z);
+
+    this.cricketBatter = new CricketBatter();
+    const aboutWp = JOURNEY_WAYPOINTS[1];
+    this.cricketBatter.placeAt(aboutWp.x + 20, aboutWp.z + 8, heightAt, -Math.PI * 0.35);
+    this.scene.add(this.cricketBatter.group);
+
+    this.martini = new Martini(
+      { x: JOURNEY_WAYPOINTS[1].x - 12, z: JOURNEY_WAYPOINTS[1].z + 10 },
+      { x: JOURNEY_WAYPOINTS[3].x + 10, z: JOURNEY_WAYPOINTS[3].z - 10 },
+      [0.06, 0.44],
+      heightAt,
+    );
+    this.scene.add(this.martini.group);
+
+    const paperSection = SECTIONS.find((s) => s.id === 'paper')!;
+    this.library = new Library([paperSection.start, paperSection.end]);
+    const archiveWp = JOURNEY_WAYPOINTS[7];
+    this.library.placeAt(archiveWp.x + 18, archiveWp.z - 6, heightAt, Math.PI * 0.2);
+    this.scene.add(this.library.group);
   }
 
   private populateWarriors(settings: QualitySettings): void {
@@ -134,10 +162,10 @@ export class World {
   }
 
   /** Idea #9: physical waystones on the plateau. Count is fixed and decoupled from resume.education.length
-   * on purpose (content and scene stay independent) — 3 reads fine whether you list 2 or 3 entries. */
+   * on purpose (content and scene stay independent): 3 reads fine whether you list 2 or 3 entries. */
   private placeWaystones(): void {
     const heightAt = (x: number, z: number) => this.terrain.heightAt(x, z);
-    const wp = JOURNEY_WAYPOINTS[7];
+    const wp = JOURNEY_WAYPOINTS[8];
     const offsets = [-14, 0, 14];
     for (const dx of offsets) {
       const stone = createWaystone();
@@ -193,7 +221,7 @@ export class World {
       if (waypointIndex === undefined) continue;
       const wp = JOURNEY_WAYPOINTS[waypointIndex];
       const labelX = wp.x + 58;
-      const label = createWorldLabel(section.labelText);
+      const label = createWorldLabel(section.heading);
       label.position.set(labelX, this.terrain.heightAt(labelX, wp.z) + 20, wp.z);
       this.scene.add(label);
     }
@@ -209,6 +237,9 @@ export class World {
     this.lighting.followCamera(cameraPosition);
     this.props.update(elapsed);
     this.ambient.update(elapsed);
+    this.cricketBatter.update(progress);
+    this.martini.update(progress, elapsed);
+    this.library.update(progress);
     return blend;
   }
 }

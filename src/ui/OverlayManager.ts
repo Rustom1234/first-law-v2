@@ -128,12 +128,26 @@ export class OverlayManager {
   private renderExperience(body: HTMLElement, entries: ExperienceEntry[]): void {
     const list = el('div', 'dispatch-scroll');
     for (const entry of entries) {
-      const item = el('article', 'dispatch-item');
+      const item = el('article', 'dispatch-item dispatch-item--with-logo');
+
+      if (entry.logo) {
+        const logo = document.createElement('img');
+        logo.className = 'dispatch-item__logo';
+        logo.src = entry.logo;
+        logo.alt = entry.org;
+        item.appendChild(logo);
+      } else {
+        item.appendChild(el('div', 'dispatch-item__logo dispatch-item__logo--placeholder', initials(entry.org)));
+      }
+
+      const content = el('div', 'dispatch-item__content');
       const titleLine = el('p', 'dispatch-item__title', entry.title);
       titleLine.appendChild(el('span', 'dispatch-item__period', entry.period));
-      item.appendChild(titleLine);
-      item.appendChild(el('p', 'dispatch-item__org', entry.org));
-      item.appendChild(el('p', 'dispatch-item__blurb', entry.blurb));
+      content.appendChild(titleLine);
+      content.appendChild(el('p', 'dispatch-item__org', entry.org));
+      content.appendChild(el('p', 'dispatch-item__blurb', entry.blurb));
+      item.appendChild(content);
+
       list.appendChild(item);
     }
     body.appendChild(list);
@@ -185,6 +199,27 @@ export class OverlayManager {
       item.appendChild(titleLine);
       item.appendChild(el('p', 'dispatch-item__org', entry.org));
       item.appendChild(el('p', 'dispatch-item__blurb', entry.blurb));
+
+      const hasDetails = Boolean(entry.gpa) || Boolean(entry.coursework?.length);
+      if (hasDetails) {
+        const details = el('div', 'dispatch-item__details');
+        if (entry.gpa) details.appendChild(el('p', 'dispatch-item__gpa', `GPA: ${entry.gpa}`));
+        if (entry.coursework?.length) {
+          const courseworkList = el('ul', 'dispatch-item__coursework');
+          for (const course of entry.coursework) courseworkList.appendChild(el('li', undefined, course));
+          details.appendChild(courseworkList);
+        }
+
+        const toggle = el('button', 'dispatch-item__toggle', 'Coursework & GPA ▾');
+        toggle.type = 'button';
+        toggle.addEventListener('click', () => {
+          const isOpen = details.classList.toggle('dispatch-item__details--open');
+          toggle.textContent = isOpen ? 'Coursework & GPA ▴' : 'Coursework & GPA ▾';
+        });
+        item.appendChild(toggle);
+        item.appendChild(details);
+      }
+
       list.appendChild(item);
     });
     body.appendChild(list);

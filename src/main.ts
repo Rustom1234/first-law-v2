@@ -27,8 +27,11 @@ function boot(): void {
     canvas: requireEl<HTMLCanvasElement>('scene-canvas'),
     scrollSpacer: requireEl<HTMLDivElement>('scroll-spacer'),
     overlayRoot: requireEl<HTMLDivElement>('overlay-root'),
-    voiceRoot: requireEl<HTMLDivElement>('voice-root'),
+    tocRoot: requireEl<HTMLDivElement>('toc-root'),
     runeRoot: requireEl<HTMLDivElement>('rune-root'),
+    toastRoot: requireEl<HTMLDivElement>('toast-root'),
+    audioRoot: requireEl<HTMLDivElement>('audio-root'),
+    resumeScrollRoot: requireEl<HTMLDivElement>('resume-scroll-root'),
   };
 
   const app = new App(dom, tier, reducedMotion);

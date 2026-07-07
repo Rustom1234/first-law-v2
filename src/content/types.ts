@@ -5,11 +5,13 @@ export interface Profile {
   bio: string[];
   email?: string;
   links?: { label: string; url: string }[];
+  resumeUrl?: string;
 }
 
 export interface ExperienceEntry {
   title: string;
   org: string;
+  logo?: string;
   period: string;
   blurb: string;
   tags?: string[];
@@ -29,6 +31,8 @@ export interface EducationEntry {
   org: string;
   period: string;
   blurb: string;
+  gpa?: string;
+  coursework?: string[];
 }
 
 export interface PaperEntry {
@@ -60,7 +64,4 @@ export interface Section {
   end: number;
   fadeIn: number;
   fadeOut: number;
-  labelText: string;
-  /** One-line in-world "chronicler" voice-over shown as a subtitle when this section is active. */
-  voiceLine: string;
 }

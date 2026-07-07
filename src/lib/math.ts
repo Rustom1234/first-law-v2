@@ -27,3 +27,25 @@ export function bandFade(t: number, start: number, end: number, fadeIn: number, 
   const outValue = 1 - smoothstep(end - fadeOut, end, t);
   return Math.min(inValue, outValue);
 }
+
+export function easeInOutCubic(t: number): number {
+  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+}
+
+/** A fast, duration-capped scroll animation: snappier than native smooth-scroll over long distances. */
+export function rushScrollTo(targetY: number, maxDurationMs = 900): void {
+  const startY = window.scrollY;
+  const distance = targetY - startY;
+  if (Math.abs(distance) < 2) return;
+
+  const duration = Math.min(maxDurationMs, 400 + Math.abs(distance) * 0.25);
+  const startTime = performance.now();
+
+  function step(now: number) {
+    const elapsed = now - startTime;
+    const t = clamp(elapsed / duration, 0, 1);
+    window.scrollTo(0, startY + distance * easeInOutCubic(t));
+    if (t < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}

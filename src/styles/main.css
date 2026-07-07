@@ -121,3 +121,16 @@ body {
 .fallback-link {
   color: #e7e5df;
 }
+
+.cursor-trail {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+}
+
+@media (max-width: 720px) {
+  .cursor-trail {
+    display: none;
+  }
+}

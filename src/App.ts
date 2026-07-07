@@ -11,7 +11,11 @@ import { buildCameraPath, type CameraPath } from './camera/path';
 import { ScrollController } from './camera/ScrollController';
 import { OverlayManager } from './ui/OverlayManager';
 import { Progress } from './ui/Progress';
-import { VoiceLine } from './ui/VoiceLine';
+import { TableOfContents } from './ui/TableOfContents';
+import { CursorTrail } from './ui/CursorTrail';
+import { ChapterToast } from './ui/ChapterToast';
+import { AmbientAudio } from './ui/AmbientAudio';
+import { ResumeScroll } from './ui/ResumeScroll';
 import { resume } from './content/resume';
 import { SECTIONS } from './content/sections';
 
@@ -21,8 +25,11 @@ export interface AppDom {
   canvas: HTMLCanvasElement;
   scrollSpacer: HTMLElement;
   overlayRoot: HTMLElement;
-  voiceRoot: HTMLElement;
+  tocRoot: HTMLElement;
   runeRoot: HTMLElement;
+  toastRoot: HTMLElement;
+  audioRoot: HTMLElement;
+  resumeScrollRoot: HTMLElement;
 }
 
 export class App {
@@ -33,8 +40,11 @@ export class App {
   private readonly composer: EffectComposer | null;
   private readonly scrollController: ScrollController;
   private readonly overlayManager: OverlayManager;
-  private readonly voiceLine: VoiceLine;
+  private readonly toc: TableOfContents;
   private readonly progressUI: Progress;
+  private readonly cursorTrail: CursorTrail | null;
+  private readonly chapterToast: ChapterToast;
+  private readonly resumeScroll: ResumeScroll;
   private readonly loop: Loop;
   private readonly stopResize: () => void;
 
@@ -62,9 +72,15 @@ export class App {
     this.overlayManager = new OverlayManager(dom.overlayRoot);
     this.overlayManager.build(resume, SECTIONS);
 
-    this.voiceLine = new VoiceLine(dom.voiceRoot, SECTIONS);
-
+    this.toc = new TableOfContents(dom.tocRoot, SECTIONS);
     this.progressUI = new Progress(dom.runeRoot, SECTIONS);
+    this.chapterToast = new ChapterToast(dom.toastRoot);
+    new AmbientAudio(dom.audioRoot);
+    this.resumeScroll = new ResumeScroll(dom.resumeScrollRoot, resume.profile);
+
+    // Ember trail is a nice-to-have, not core functionality: skip it on the low tier
+    // (mobile/low-power) rather than spend cursor-tracking cycles there.
+    this.cursorTrail = tier === 'high' && !reducedMotion ? new CursorTrail() : null;
 
     this.loop = new Loop((dt, elapsed) => this.tick(dt, elapsed));
   }
@@ -75,8 +91,10 @@ export class App {
     const blend = this.world.update(progress, elapsed, this.cameraRig.camera.position);
     document.documentElement.style.setProperty('--region-accent', `#${blend.uiAccent.getHexString()}`);
     this.overlayManager.update(progress);
-    this.voiceLine.update(progress);
+    this.toc.update(progress);
     this.progressUI.update(progress);
+    this.chapterToast.update(progress, SECTIONS);
+    this.resumeScroll.update(progress);
 
     if (this.composer) {
       this.composer.render();
@@ -92,5 +110,6 @@ export class App {
   dispose(): void {
     this.loop.dispose();
     this.stopResize();
+    this.cursorTrail?.dispose();
   }
 }
