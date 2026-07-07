@@ -1,11 +1,17 @@
 import * as THREE from 'three';
 import { JOURNEY_WAYPOINTS } from '../camera/path';
-import { clamp } from '../lib/math';
+import { clamp, lerp } from '../lib/math';
 
 const SPIRIT_COLOR = new THREE.Color('#e8ecdf');
 const RUN_LEAD = 0.028;
+const HOVER = 0.22;
 const WISP_COUNT = 26;
 const WISP_LENGTH = 3.6;
+
+const headingMatrix = new THREE.Matrix4();
+const desiredQuaternion = new THREE.Quaternion();
+const upVector = new THREE.Vector3(0, 1, 0);
+const lookTarget = new THREE.Vector3();
 
 function drawHaloCanvas(): HTMLCanvasElement {
   const canvas = document.createElement('canvas');
@@ -20,10 +26,11 @@ function drawHaloCanvas(): HTMLCanvasElement {
   return canvas;
 }
 
-/** A spectral white whippet, patronus-style, running the whole road with you: additive
- * glowing body (no shadow, unfogged, so it burns softly through any haze), a breathing
- * halo, and a trail of wisps streaming off behind the gallop. It keeps a little ahead of
- * the camera along a path offset from the road's centerline. */
+/** A spectral white whippet, patronus-style, running the whole road with you: a smooth
+ * ellipsoid-and-capsule body (additive, unlit, unfogged, shadowless) with a breathing halo
+ * and wisps streaming off the gallop. It samples the road arc-length-uniformly like the
+ * camera does, hovers a hand above the ground, and damps its height and heading so terrain
+ * noise and path curvature never jerk it around. */
 export class Whippet {
   readonly group = new THREE.Group();
   private readonly legs: THREE.Mesh[] = [];
@@ -33,6 +40,8 @@ export class Whippet {
   private readonly heightAt: (x: number, z: number) => number;
   private readonly haloMaterial: THREE.SpriteMaterial;
   private readonly wisps: THREE.Points;
+  private smoothY: number | null = null;
+  private lastElapsed = 0;
 
   constructor(heightAt: (x: number, z: number) => number) {
     this.heightAt = heightAt;
@@ -54,6 +63,64 @@ export class Whippet {
 
     this.body = new THREE.Group();
     this.group.add(this.body);
+
+    // Forward is +z. Rounded anatomy: deep ellipsoid chest flowing into a tucked waist,
+    // an arched capsule neck, tapered muzzle, and capsule legs.
+    const chest = new THREE.Mesh(new THREE.SphereGeometry(0.32, 14, 12), coat);
+    chest.position.set(0, 1.0, 0.32);
+    chest.scale.set(0.62, 0.92, 1.5);
+    this.body.add(chest);
+
+    const waist = new THREE.Mesh(new THREE.SphereGeometry(0.24, 14, 12), coat);
+    waist.position.set(0, 1.06, -0.38);
+    waist.scale.set(0.52, 0.78, 1.7);
+    waist.rotation.x = 0.14;
+    this.body.add(waist);
+
+    const neck = new THREE.Mesh(new THREE.CapsuleGeometry(0.105, 0.46, 6, 12), coat);
+    neck.position.set(0, 1.38, 0.62);
+    neck.rotation.x = -0.55;
+    this.body.add(neck);
+
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.13, 12, 10), coat);
+    head.position.set(0, 1.62, 0.84);
+    head.scale.set(0.78, 0.9, 1.15);
+    this.body.add(head);
+
+    const snout = new THREE.Mesh(new THREE.ConeGeometry(0.075, 0.34, 10), coat);
+    snout.position.set(0, 1.57, 1.06);
+    snout.rotation.x = Math.PI / 2 - 0.12;
+    this.body.add(snout);
+
+    for (const side of [-1, 1]) {
+      const ear = new THREE.Mesh(new THREE.ConeGeometry(0.045, 0.15, 6), coat);
+      ear.position.set(side * 0.075, 1.76, 0.78);
+      ear.rotation.z = side * -0.45;
+      this.body.add(ear);
+    }
+
+    // Legs pivot at the hip/shoulder: geometry shifted so rotation.x swings them from the top.
+    const legGeometry = new THREE.CapsuleGeometry(0.048, 0.62, 6, 10);
+    legGeometry.translate(0, -0.35, 0);
+    const legSpots: [number, number][] = [
+      [-0.12, 0.52],
+      [0.12, 0.52],
+      [-0.1, -0.52],
+      [0.1, -0.52],
+    ];
+    for (const [x, z] of legSpots) {
+      const leg = new THREE.Mesh(legGeometry, coat);
+      leg.position.set(x, 0.92, z);
+      this.legs.push(leg);
+      this.body.add(leg);
+    }
+
+    const tailGeometry = new THREE.CylinderGeometry(0.014, 0.04, 0.68, 10);
+    tailGeometry.translate(0, -0.34, 0);
+    this.tail = new THREE.Mesh(tailGeometry, coat);
+    this.tail.position.set(0, 1.14, -0.72);
+    this.tail.rotation.x = 2.5;
+    this.body.add(this.tail);
 
     const haloTexture = new THREE.CanvasTexture(drawHaloCanvas());
     this.haloMaterial = new THREE.SpriteMaterial({
@@ -85,65 +152,16 @@ export class Whippet {
     });
     this.wisps = new THREE.Points(wispGeometry, wispMaterial);
     this.group.add(this.wisps);
-
-    // Forward is +z (update() aligns +z with the path tangent).
-    const chest = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.55, 0.65), coat);
-    chest.position.set(0, 0.95, 0.35);
-    this.body.add(chest);
-
-    const waist = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.34, 0.75), coat);
-    waist.position.set(0, 1.0, -0.3);
-    waist.rotation.x = 0.12;
-    this.body.add(waist);
-
-    const neck = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.5, 0.22), coat);
-    neck.position.set(0, 1.32, 0.65);
-    neck.rotation.x = -0.5;
-    this.body.add(neck);
-
-    const head = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.2, 0.3), coat);
-    head.position.set(0, 1.52, 0.82);
-    this.body.add(head);
-
-    const snout = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.12, 0.3), coat);
-    snout.position.set(0, 1.48, 1.05);
-    this.body.add(snout);
-
-    for (const side of [-1, 1]) {
-      const ear = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.16, 4), coat);
-      ear.position.set(side * 0.08, 1.66, 0.76);
-      ear.rotation.z = side * -0.5;
-      this.body.add(ear);
-    }
-
-    // Legs pivot at the hip/shoulder: geometry shifted so rotation.x swings them from the top.
-    const legGeometry = new THREE.BoxGeometry(0.09, 0.85, 0.11);
-    legGeometry.translate(0, -0.425, 0);
-    const legSpots: [number, number][] = [
-      [-0.13, 0.55],
-      [0.13, 0.55],
-      [-0.11, -0.55],
-      [0.11, -0.55],
-    ];
-    for (const [x, z] of legSpots) {
-      const leg = new THREE.Mesh(legGeometry, coat);
-      leg.position.set(x, 0.9, z);
-      this.legs.push(leg);
-      this.body.add(leg);
-    }
-
-    const tailGeometry = new THREE.CylinderGeometry(0.02, 0.045, 0.7, 4);
-    tailGeometry.translate(0, -0.35, 0);
-    this.tail = new THREE.Mesh(tailGeometry, coat);
-    this.tail.position.set(0, 1.1, -0.68);
-    this.tail.rotation.x = 2.4;
-    this.body.add(this.tail);
   }
 
   update(progress: number, elapsed: number): void {
+    const dt = clamp(elapsed - this.lastElapsed, 0, 0.1);
+    this.lastElapsed = elapsed;
+
+    // Arc-length sampling (same as the camera) keeps its speed constant between waypoints.
     const t = clamp(progress + RUN_LEAD, 0.001, 0.999);
-    const pos = this.curve.getPoint(t);
-    const tangent = this.curve.getTangent(t);
+    const pos = this.curve.getPointAt(t);
+    const tangent = this.curve.getTangentAt(t);
 
     const stride = elapsed * 11;
     // Rotary gallop: front pair and rear pair roughly opposed, inner legs trailing a beat.
@@ -151,8 +169,8 @@ export class Whippet {
     this.legs[1].rotation.x = Math.sin(stride + 0.5) * 0.65;
     this.legs[2].rotation.x = Math.sin(stride + Math.PI) * 0.6;
     this.legs[3].rotation.x = Math.sin(stride + Math.PI + 0.5) * 0.6;
-    this.body.position.y = Math.abs(Math.sin(stride)) * 0.14;
-    this.body.rotation.x = Math.sin(stride) * 0.07;
+    this.body.position.y = Math.abs(Math.sin(stride)) * 0.1 + Math.sin(elapsed * 1.7) * 0.05;
+    this.body.rotation.x = Math.sin(stride) * 0.06;
     this.tail.rotation.z = Math.sin(elapsed * 7) * 0.35;
 
     this.haloMaterial.opacity = 0.24 + (Math.sin(elapsed * 3.1) * 0.5 + 0.5) * 0.14;
@@ -170,7 +188,17 @@ export class Whippet {
     }
     positions.needsUpdate = true;
 
-    this.group.position.set(pos.x, this.heightAt(pos.x, pos.z), pos.z);
-    this.group.rotation.y = Math.atan2(tangent.x, tangent.z);
+    // Damped height (it hovers, and never inherits per-bump terrain noise) and damped
+    // heading (path curvature turns the body smoothly instead of snapping it).
+    const targetY = this.heightAt(pos.x, pos.z) + HOVER;
+    const k = 1 - Math.exp(-5 * dt);
+    this.smoothY = this.smoothY === null ? targetY : lerp(this.smoothY, targetY, k);
+    this.group.position.set(pos.x, this.smoothY, pos.z);
+
+    lookTarget.copy(this.group.position).add(tangent);
+    headingMatrix.lookAt(lookTarget, this.group.position, upVector);
+    desiredQuaternion.setFromRotationMatrix(headingMatrix);
+    const headingK = 1 - Math.exp(-7 * dt);
+    this.group.quaternion.slerp(desiredQuaternion, headingK);
   }
 }
