@@ -12,6 +12,8 @@ import { createWorldLabel } from './labels/WorldLabel';
 import { REGIONS, resolveRegionBlend } from './regions';
 import { createRider } from './Cavalry';
 import { createWaystone } from './Waystones';
+import { RuneStone } from './RuneStones';
+import { RUNES } from '../content/runes';
 import { Companions, type CompanionDef } from './Companions';
 import { Ambient } from './Ambient';
 import { CricketBatter } from './CricketBatter';
@@ -45,6 +47,7 @@ export class World {
   readonly martini: Martini;
   readonly library: Library;
   readonly campfires: Campfire[];
+  private readonly runeStones: RuneStone[] = [];
 
   constructor(settings: QualitySettings, sections: Section[]) {
     this.terrain = new Terrain(1337, settings.terrainSegments);
@@ -81,6 +84,7 @@ export class World {
     this.placeCavalry();
     this.placeWaystones();
     this.placeCompanions();
+    this.placeRuneStones(sections);
     this.buildWorldLabels(sections);
 
     const heightAt = (x: number, z: number) => this.terrain.heightAt(x, z);
@@ -104,12 +108,15 @@ export class World {
     this.library.placeAt(paperWp.x + 18, paperWp.z - 6, heightAt, Math.PI * 0.2);
     this.scene.add(this.library.group);
 
-    // Campfires mark the rest stops of the journey: one where the road begins, one at the
-    // war camp (where a bare flickering light used to stand in for a fire), one at the summit
-    // beside the hero, so the journey ends at a fire rather than in the dark.
+    // Campfires mark the rest stops of the journey: one where the road begins, one among
+    // the education waystones (a fire to study by), one at the war camp (where a bare
+    // flickering light used to stand in for a fire), one at the summit beside the hero,
+    // so the journey ends at a fire rather than in the dark.
     const summit = JOURNEY_WAYPOINTS[JOURNEY_WAYPOINTS.length - 1];
+    const educationWaypoint = JOURNEY_WAYPOINTS[REGION_WAYPOINT_INDEX.north];
     const fireSpots: { x: number; z: number }[] = [
       { x: JOURNEY_WAYPOINTS[0].x + 6, z: JOURNEY_WAYPOINTS[0].z + 4 },
+      { x: educationWaypoint.x + 5, z: educationWaypoint.z + 5 },
       { x: warWaypoint.x + 2, z: warWaypoint.z + 2 },
       { x: summit.x - 2, z: summit.z + 6 },
     ];
@@ -195,6 +202,25 @@ export class World {
     }
   }
 
+  /** A landmark at every rune: one carved obelisk per chapter, standing beside the road just
+   * ahead of the chapter's waypoint, its glyph (matching the nav runes) igniting in the
+   * region's accent color while that chapter is on screen. Sides alternate so the road
+   * reads as a marked trail rather than a fence line. */
+  private placeRuneStones(sections: Section[]): void {
+    const heightAt = (x: number, z: number) => this.terrain.heightAt(x, z);
+    sections.forEach((section, i) => {
+      const waypointIndex = REGION_WAYPOINT_INDEX[section.region];
+      if (waypointIndex === undefined) return;
+      const wp = JOURNEY_WAYPOINTS[waypointIndex];
+      const side = i % 2 === 0 ? 1 : -1;
+      const region = REGIONS.find((r) => r.id === section.region) ?? REGIONS[0];
+      const stone = new RuneStone(RUNES[i % RUNES.length], region.uiAccent, section, i * 1.9);
+      stone.placeAt(wp.x + side * 11, wp.z - 16, heightAt, side * -0.22);
+      this.scene.add(stone.group);
+      this.runeStones.push(stone);
+    });
+  }
+
   /** Idea #2: named companions with a one-line voice tied to the chapter they stand near. */
   private placeCompanions(): void {
     const heightAt = (x: number, z: number) => this.terrain.heightAt(x, z);
@@ -259,6 +285,7 @@ export class World {
     this.martini.update(progress, elapsed);
     this.library.update(progress);
     for (const fire of this.campfires) fire.update(elapsed);
+    for (const stone of this.runeStones) stone.update(progress, elapsed);
     return blend;
   }
 }
