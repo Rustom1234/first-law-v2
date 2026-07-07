@@ -3,6 +3,7 @@ import * as pdfjsLib from 'pdfjs-dist';
 // eslint-disable-next-line import/no-unresolved
 import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 import { clamp } from '../lib/math';
+import { assetUrl } from '../lib/assetUrl';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
 
@@ -19,7 +20,7 @@ export class GhostlyResume {
   private readonly baseY: number;
   private readonly riseHeight: number;
 
-  constructor(range: [number, number], baseY: number, riseHeight: number, src = '/resume.pdf') {
+  constructor(range: [number, number], baseY: number, riseHeight: number, src = assetUrl('resume.pdf')) {
     this.rangeStart = range[0];
     this.rangeEnd = range[1];
     this.baseY = baseY;

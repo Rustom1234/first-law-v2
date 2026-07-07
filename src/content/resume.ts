@@ -1,4 +1,5 @@
 import type { ResumeData } from './types';
+import { assetUrl } from '../lib/assetUrl';
 
 /**
  * Sourced from the July 2026 resume plus prior conversation for details not on the
@@ -32,7 +33,7 @@ export const resume: ResumeData = {
       { label: 'LinkedIn', url: 'https://linkedin.com/in/rustom-dubash' },
       { label: 'GitHub', url: 'https://github.com/Rustom1234' },
     ],
-    resumeUrl: '/resume.pdf',
+    resumeUrl: assetUrl('resume.pdf'),
   },
 
   // Sourced from the July 2026 resume. Logos stay undefined (initials placeholder)
@@ -154,14 +155,14 @@ export const resume: ResumeData = {
     },
     {
       title: 'Outreach Desk',
-      image: '/projects/outreach-desk.svg',
+      image: assetUrl('projects/outreach-desk.svg'),
       blurb: 'A configurable four-stage cold-outreach pipeline (research, draft, QA-filter, deliver) that personalizes messages via Claude and blocks AI-slop phrasing.',
       tags: ['LLM Pipeline', 'Automation'],
       link: 'https://github.com/Rustom1234/outreach-desk', // TODO: repo is currently private, make it public
     },
     {
       title: 'PINN',
-      image: '/projects/pinn.svg',
+      image: assetUrl('projects/pinn.svg'),
       blurb: 'A physics-informed neural network project (repo not yet public under this account, so details are TODO once pushed).',
       tags: ['PyTorch', 'Physics-Informed ML'],
       link: undefined, // TODO: no matching repo found on GitHub yet; add the real link once it's pushed
@@ -193,7 +194,7 @@ export const resume: ResumeData = {
     {
       title: 'MSE, Computer and Information Science (Submatriculation)',
       org: 'University of Pennsylvania',
-      logo: '/logos/upenn.svg',
+      logo: assetUrl('logos/upenn.svg'),
       period: 'Incoming',
       blurb: 'Graduate-level coursework completed concurrently with undergraduate study at Haverford.',
       gpa: undefined,
@@ -202,7 +203,7 @@ export const resume: ResumeData = {
     {
       title: 'Study Abroad',
       org: 'AIT Budapest (Aquincum Institute of Technology)',
-      logo: '/logos/ait-budapest.svg',
+      logo: assetUrl('logos/ait-budapest.svg'),
       period: 'TODO: dates',
       blurb: 'A semester studying in Budapest.',
       gpa: undefined,
@@ -232,7 +233,7 @@ export const resume: ResumeData = {
     {
       title: 'High School Diploma',
       org: 'UWCSEA Dover',
-      logo: '/logos/uwc.svg',
+      logo: assetUrl('logos/uwc.svg'),
       period: 'TODO: dates',
       blurb: 'United World College South East Asia, Dover campus.',
       gpa: undefined,
