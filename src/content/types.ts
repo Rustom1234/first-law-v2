@@ -33,6 +33,7 @@ export interface EducationEntry {
   period: string;
   blurb: string;
   gpa?: string;
+  activities?: string[];
   coursework?: string[];
 }
 

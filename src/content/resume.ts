@@ -204,7 +204,7 @@ export const resume: ResumeData = {
       title: 'Study Abroad',
       org: 'AIT Budapest (Aquincum Institute of Technology)',
       logo: assetUrl('logos/ait-budapest.svg'),
-      period: 'TODO: dates',
+      period: 'Jan 2026 – May 2026',
       blurb: 'A semester studying in Budapest.',
       gpa: undefined,
       coursework: ['Combinatorial Optimization', 'Deep Learning', 'Applied Cryptography'],
@@ -214,8 +214,9 @@ export const resume: ResumeData = {
       org: 'Haverford College',
       logo: undefined, // TODO: optional Haverford crest
       period: 'Graduation: May 2027',
-      blurb: 'Varsity Cricket Team.',
+      blurb: 'Undergraduate study in computer science and economics.',
       gpa: '3.93 / 4.0',
+      activities: ['Varsity Cricket Team'],
       coursework: [
         'ECON 105 (Intro to Economics)',
         'ECON 201 (Analytical Methods for Economics)',
