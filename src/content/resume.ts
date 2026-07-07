@@ -93,10 +93,6 @@ export const resume: ResumeData = {
     },
   ],
 
-  // GeoCNN, Outreach Desk, and Citation Graph Forecasting exist on GitHub but are
-  // still private: make them public from GitHub Settings > General > Danger Zone
-  // (or `gh repo edit --visibility public` from an authenticated machine) for the
-  // links below to resolve. PINN has no matching repo under this account yet.
   projects: [
     {
       title: 'Green Bone Protocol',
@@ -104,7 +100,7 @@ export const resume: ResumeData = {
       blurb:
         'A tiered multi-agent framework (inspired by Jade City by Fonda Lee) that routes tasks across models by capability, with a dedicated validation tier and a token-cost study of the accuracy-vs-cost tradeoff.',
       tags: ['Anthropic API', 'Agent Orchestration'],
-      link: undefined, // TODO: add repo link once it's pushed/public
+      link: 'https://github.com/Rustom1234/green-bone-protocol',
     },
     {
       title: 'Residual-Boosted Transformer Ensembles',
@@ -143,28 +139,28 @@ export const resume: ResumeData = {
       image: assetUrl('images/GeoCNN.webp'),
       blurb: 'CLIP-embedding + MLP classifier that geolocates Street View photos into 211 world regions, reaching ~90% continent-level accuracy.',
       tags: ['CLIP', 'Geolocation'],
-      link: 'https://github.com/Rustom1234/GeoCNN', // TODO: repo is currently private, make it public
+      link: 'https://github.com/Rustom1234/GeoCNN',
     },
     {
       title: 'Outreach Desk',
       image: assetUrl('projects/outreach-desk.svg'),
       blurb: 'A configurable four-stage cold-outreach pipeline (research, draft, QA-filter, deliver) that personalizes messages via Claude and blocks AI-slop phrasing.',
       tags: ['LLM Pipeline', 'Automation'],
-      link: 'https://github.com/Rustom1234/outreach-desk', // TODO: repo is currently private, make it public
+      link: 'https://github.com/Rustom1234/outreach-desk',
     },
     {
       title: 'PINN',
       image: assetUrl('projects/pinn.svg'),
-      blurb: 'A physics-informed neural network project (repo not yet public under this account, so details are TODO once pushed).',
+      blurb: 'A physics-informed neural network project.',
       tags: ['PyTorch', 'Physics-Informed ML'],
-      link: undefined, // TODO: no matching repo found on GitHub yet; add the real link once it's pushed
+      link: 'https://github.com/Rustom1234/pinn-committor',
     },
     {
       title: 'Citation Graph Forecasting',
       image: assetUrl('images/citation.webp'),
       blurb: 'Forecasts a paper’s future citations from an OpenAlex citation graph using leakage-audited temporal features and an XGBoost baseline (Spearman 0.70).',
       tags: ['XGBoost', 'Graph ML'],
-      link: 'https://github.com/Rustom1234/citation-graph-forecasting', // TODO: repo is currently private, make it public
+      link: 'https://github.com/Rustom1234/citation-graph-forecasting',
     },
     {
       title: 'Connect4Bot',
