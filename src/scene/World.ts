@@ -20,7 +20,9 @@ import { CricketBatter } from './CricketBatter';
 import { Martini } from './Martini';
 import { Library } from './Library';
 import { Campfire } from './Campfire';
+import { GroundScript } from './GroundScript';
 import { SECTIONS } from '../content/sections';
+import { resume } from '../content/resume';
 import type { Section } from '../content/types';
 
 const REGION_WAYPOINT_INDEX: Record<string, number> = {
@@ -126,6 +128,23 @@ export class World {
       this.scene.add(fire.group);
       return fire;
     });
+
+    // Experiment (About only): the chapter text is inked onto the terrain along the road
+    // instead of shown on an overlay card, so scrolling pushes the writing past underfoot.
+    // The About card is skipped in OverlayManager.build while this is active.
+    const aboutSection = SECTIONS.find((s) => s.id === 'about')!;
+    const aboutScript = new GroundScript(
+      {
+        heading: aboutSection.heading,
+        flavor: aboutSection.flavor,
+        paragraphs: resume.profile.bio,
+      },
+      { x: -4, z: -52 },
+      20,
+      44,
+      heightAt,
+    );
+    this.scene.add(aboutScript.mesh);
   }
 
   private populateWarriors(settings: QualitySettings): void {

@@ -57,6 +57,9 @@ export class OverlayManager {
 
   build(resume: ResumeData, sections: Section[]): void {
     for (const section of sections) {
+      // Experiment: the About chapter's text is written on the terrain itself
+      // (scene/GroundScript.ts), so its overlay card is not built.
+      if (section.dataRef === 'about') continue;
       const card = this.buildCard(resume, section);
       this.container.appendChild(card);
       this.tracked.push({ section, el: card });
