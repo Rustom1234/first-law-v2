@@ -1,0 +1,470 @@
+.dispatch-card {
+  position: fixed;
+  left: 2rem;
+  bottom: 3rem;
+  max-width: 30rem;
+  padding: 1.6rem 1.9rem;
+  background: linear-gradient(155deg, rgba(20, 19, 16, 0.85), rgba(20, 19, 16, 0.7));
+  border: 1px solid rgba(231, 229, 223, 0.18);
+  border-left: 3px solid var(--region-accent);
+  border-radius: 2px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(2px);
+  transition: opacity 0.15s linear, border-color 0.4s ease;
+  will-change: opacity, transform;
+}
+
+.dispatch-card--approach,
+.dispatch-card--about,
+.dispatch-card--contact {
+  left: 50%;
+  bottom: auto;
+  top: 50%;
+  transform-origin: center;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  max-width: 36rem;
+  border-left: 1px solid rgba(231, 229, 223, 0.18);
+  border-top: 3px solid var(--region-accent);
+}
+
+.dispatch-card--projects {
+  left: 50%;
+  bottom: 2rem;
+  transform-origin: center;
+  transform: translate(-50%, 0);
+  max-width: min(70rem, 86vw);
+  width: 86vw;
+}
+
+.dispatch-card--paper {
+  left: 50%;
+  bottom: auto;
+  top: 50%;
+  transform-origin: center;
+  transform: translate(-50%, -50%);
+  max-width: 34rem;
+  text-align: center;
+}
+
+.dispatch-card__heading {
+  margin: 0 0 0.85rem;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--region-accent);
+  border-bottom: 1px solid rgba(183, 171, 140, 0.35);
+  padding-bottom: 0.6rem;
+  transition: color 0.4s ease;
+}
+
+.dispatch-name {
+  font-family: var(--font-display);
+  font-size: 3.4rem;
+  font-weight: 700;
+  margin: 0 0 0.6rem;
+  letter-spacing: 0.03em;
+}
+
+.dispatch-tagline {
+  font-size: 1.3rem;
+  color: #cfcabf;
+  margin: 0;
+}
+
+.dispatch-scroll {
+  max-height: 48vh;
+  overflow-y: auto;
+  padding-right: 0.4rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--region-accent) transparent;
+}
+
+.dispatch-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dispatch-scroll::-webkit-scrollbar-thumb {
+  background: var(--region-accent);
+  border-radius: 3px;
+  opacity: 0.6;
+}
+
+.dispatch-item {
+  display: block;
+  margin-bottom: 1.3rem;
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+}
+
+.dispatch-item:last-child {
+  margin-bottom: 0;
+}
+
+.dispatch-item--trial {
+  padding-left: 2.4rem;
+}
+
+.dispatch-item__trial-mark {
+  position: absolute;
+  left: 0;
+  top: 0.1rem;
+  width: 1.7rem;
+  height: 1.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--region-accent);
+  border-radius: 50%;
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  color: var(--region-accent);
+}
+
+.dispatch-item__title {
+  margin: 0 0 0.25rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.dispatch-item__period {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  color: #a79c86;
+}
+
+.dispatch-item__org {
+  margin: 0 0 0.35rem;
+  font-size: 1rem;
+  color: #b7ab8c;
+  font-style: italic;
+}
+
+.dispatch-item__blurb {
+  margin: 0;
+  font-size: 1.08rem;
+  line-height: 1.5;
+  color: #dcd8cf;
+}
+
+.dispatch-links {
+  display: flex;
+  gap: 1.2rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.dispatch-link {
+  color: #e7e5df;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(231, 229, 223, 0.4);
+  padding-bottom: 0.1rem;
+  font-size: 1.1rem;
+}
+
+.dispatch-link:hover,
+.dispatch-link:focus-visible {
+  border-bottom-color: var(--region-accent);
+  color: var(--region-accent);
+}
+
+/* About / Chronicler */
+
+.about-layout {
+  display: flex;
+  align-items: center;
+  gap: 1.8rem;
+  text-align: left;
+}
+
+.about-portrait {
+  flex: none;
+  width: 8.5rem;
+  height: 8.5rem;
+  border-radius: 50%;
+  border: 2px solid var(--region-accent);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #1a1a17;
+}
+
+.about-portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(0.35) contrast(1.08) sepia(0.12);
+}
+
+.about-portrait--placeholder {
+  font-family: var(--font-display);
+  font-size: 2.6rem;
+  font-weight: 700;
+  color: var(--region-accent);
+}
+
+.about-bio {
+  font-size: 1.08rem;
+  line-height: 1.55;
+  color: #dcd8cf;
+  margin: 0 0 0.8rem;
+}
+
+.about-bio:last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 640px) {
+  .about-layout {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+/* Projects: trophy wall */
+
+.trophy-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 1rem;
+  max-height: 58vh;
+  overflow-y: auto;
+  padding-right: 0.4rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--region-accent) transparent;
+}
+
+.trophy-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid rgba(231, 229, 223, 0.14);
+  border-radius: 4px;
+  padding: 0.9rem;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.trophy-card--link:hover,
+.trophy-card--link:focus-visible {
+  border-color: var(--region-accent);
+  transform: translateY(-2px);
+}
+
+.trophy-card__thumb {
+  width: 100%;
+  height: 7rem;
+  object-fit: cover;
+  border-radius: 3px;
+  margin-bottom: 0.7rem;
+  display: block;
+}
+
+.trophy-card__thumb--placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(140deg, color-mix(in srgb, var(--region-accent) 35%, #1a1a17), #1a1a17);
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--region-accent);
+}
+
+.trophy-card__title {
+  margin: 0 0 0.4rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.trophy-card__blurb {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: #dcd8cf;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.trophy-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.trophy-card__tag {
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--region-accent);
+  border: 1px solid var(--region-accent);
+  border-radius: 3px;
+  padding: 0.1rem 0.4rem;
+}
+
+/* Research paper: sealed relic */
+
+.relic-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.relic-seal {
+  width: 3.2rem;
+  height: 3.2rem;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--region-accent) 70%, white), var(--region-accent) 60%, #2a2340 100%);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5), inset 0 0 0 2px rgba(0, 0, 0, 0.25);
+}
+
+.relic-title {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.relic-meta {
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  color: var(--region-accent);
+  margin: 0;
+}
+
+.relic-authors {
+  font-size: 0.95rem;
+  font-style: italic;
+  color: #b7ab8c;
+  margin: 0;
+}
+
+.relic-abstract {
+  font-size: 1.05rem;
+  line-height: 1.55;
+  color: #dcd8cf;
+  margin: 0;
+}
+
+.relic-body--link {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* Chronicler voice-line subtitle */
+
+.voice-line {
+  position: fixed;
+  top: 2.2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 12;
+  max-width: 40rem;
+  width: 90vw;
+  text-align: center;
+  pointer-events: none;
+}
+
+.voice-line__text {
+  margin: 0;
+  font-style: italic;
+  font-size: 1.1rem;
+  color: rgba(231, 229, 223, 0.85);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+  transition: opacity 0.5s ease;
+  opacity: 0;
+}
+
+.rune-track {
+  position: fixed;
+  right: 1.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 11;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  height: 50vh;
+  pointer-events: none;
+}
+
+.rune-track__rail {
+  position: relative;
+  width: 2px;
+  height: 100%;
+  background: rgba(231, 229, 223, 0.14);
+}
+
+.rune-track__fill {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: var(--region-accent);
+  opacity: 0.75;
+  transition: height 0.1s linear, background-color 0.4s ease;
+}
+
+.rune-track__marks {
+  position: absolute;
+  right: 1.6rem;
+  top: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.rune-track__mark {
+  font-size: 1.2rem;
+  color: rgba(231, 229, 223, 0.3);
+  transition: color 0.25s ease, text-shadow 0.25s ease;
+}
+
+.rune-track__mark--active {
+  color: var(--region-accent);
+  text-shadow: 0 0 8px var(--region-accent);
+}
+
+@media (max-width: 720px) {
+  .dispatch-card {
+    left: 1rem;
+    right: 1rem;
+    bottom: 1.5rem;
+    max-width: none;
+  }
+
+  .dispatch-card--projects {
+    left: 1rem;
+    right: 1rem;
+    width: auto;
+    transform: none;
+  }
+
+  .trophy-grid {
+    grid-template-columns: 1fr;
+    max-height: 50vh;
+  }
+
+  .rune-track {
+    right: 0.75rem;
+    height: 36vh;
+  }
+
+  .voice-line {
+    top: 1.2rem;
+  }
+}
