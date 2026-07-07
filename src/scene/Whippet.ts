@@ -2,12 +2,28 @@ import * as THREE from 'three';
 import { JOURNEY_WAYPOINTS } from '../camera/path';
 import { clamp } from '../lib/math';
 
-const COAT_COLOR = new THREE.Color('#efe9dc');
+const SPIRIT_COLOR = new THREE.Color('#e8ecdf');
 const RUN_LEAD = 0.028;
+const WISP_COUNT = 26;
+const WISP_LENGTH = 3.6;
 
-/** A white whippet running the whole road with you: it keeps a little ahead of the camera
- * along a path offset from the road's centerline, deep-chested and thin-waisted, legs in a
- * rotary gallop. Slightly larger than life so it stays readable from the camera's height. */
+function drawHaloCanvas(): HTMLCanvasElement {
+  const canvas = document.createElement('canvas');
+  canvas.width = 64;
+  canvas.height = 64;
+  const ctx = canvas.getContext('2d')!;
+  const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+  gradient.addColorStop(0, 'rgba(255, 255, 255, 0.7)');
+  gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, 64, 64);
+  return canvas;
+}
+
+/** A spectral white whippet, patronus-style, running the whole road with you: additive
+ * glowing body (no shadow, unfogged, so it burns softly through any haze), a breathing
+ * halo, and a trail of wisps streaming off behind the gallop. It keeps a little ahead of
+ * the camera along a path offset from the road's centerline. */
 export class Whippet {
   readonly group = new THREE.Group();
   private readonly legs: THREE.Mesh[] = [];
@@ -15,6 +31,8 @@ export class Whippet {
   private readonly body: THREE.Group;
   private readonly curve: THREE.CatmullRomCurve3;
   private readonly heightAt: (x: number, z: number) => number;
+  private readonly haloMaterial: THREE.SpriteMaterial;
+  private readonly wisps: THREE.Points;
 
   constructor(heightAt: (x: number, z: number) => number) {
     this.heightAt = heightAt;
@@ -25,21 +43,57 @@ export class Whippet {
     );
     this.curve = new THREE.CatmullRomCurve3(points, false, 'catmullrom', 0.5);
 
-    const coat = new THREE.MeshStandardMaterial({ color: COAT_COLOR, roughness: 0.85, flatShading: true });
+    const coat = new THREE.MeshBasicMaterial({
+      color: SPIRIT_COLOR,
+      transparent: true,
+      opacity: 0.85,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      fog: false,
+    });
 
     this.body = new THREE.Group();
     this.group.add(this.body);
 
+    const haloTexture = new THREE.CanvasTexture(drawHaloCanvas());
+    this.haloMaterial = new THREE.SpriteMaterial({
+      map: haloTexture,
+      color: SPIRIT_COLOR,
+      transparent: true,
+      opacity: 0.3,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      fog: false,
+    });
+    const halo = new THREE.Sprite(this.haloMaterial);
+    halo.position.set(0, 1.0, 0.1);
+    halo.scale.set(3.4, 2.4, 1);
+    this.body.add(halo);
+
+    // Wisp trail: particles cycle from the haunches backward and slightly upward, fading
+    // as they age, like the spirit is shedding light while it runs.
+    const wispPositions = new Float32Array(WISP_COUNT * 3);
+    const wispGeometry = new THREE.BufferGeometry();
+    wispGeometry.setAttribute('position', new THREE.BufferAttribute(wispPositions, 3));
+    const wispMaterial = new THREE.PointsMaterial({
+      color: SPIRIT_COLOR,
+      size: 0.14,
+      transparent: true,
+      opacity: 0.8,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    this.wisps = new THREE.Points(wispGeometry, wispMaterial);
+    this.group.add(this.wisps);
+
     // Forward is +z (update() aligns +z with the path tangent).
     const chest = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.55, 0.65), coat);
     chest.position.set(0, 0.95, 0.35);
-    chest.castShadow = true;
     this.body.add(chest);
 
     const waist = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.34, 0.75), coat);
     waist.position.set(0, 1.0, -0.3);
     waist.rotation.x = 0.12;
-    waist.castShadow = true;
     this.body.add(waist);
 
     const neck = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.5, 0.22), coat);
@@ -74,7 +128,6 @@ export class Whippet {
     for (const [x, z] of legSpots) {
       const leg = new THREE.Mesh(legGeometry, coat);
       leg.position.set(x, 0.9, z);
-      leg.castShadow = true;
       this.legs.push(leg);
       this.body.add(leg);
     }
@@ -101,6 +154,21 @@ export class Whippet {
     this.body.position.y = Math.abs(Math.sin(stride)) * 0.14;
     this.body.rotation.x = Math.sin(stride) * 0.07;
     this.tail.rotation.z = Math.sin(elapsed * 7) * 0.35;
+
+    this.haloMaterial.opacity = 0.24 + (Math.sin(elapsed * 3.1) * 0.5 + 0.5) * 0.14;
+
+    const positions = this.wisps.geometry.getAttribute('position') as THREE.BufferAttribute;
+    for (let i = 0; i < WISP_COUNT; i++) {
+      const age = ((i / WISP_COUNT) + elapsed * 0.55) % 1;
+      const sway = Math.sin(elapsed * 4 + i * 2.3);
+      positions.setXYZ(
+        i,
+        sway * 0.18 * age + ((i % 3) - 1) * 0.1,
+        0.9 + age * 0.9 + Math.sin(age * Math.PI * 2 + i) * 0.08,
+        -0.6 - age * WISP_LENGTH,
+      );
+    }
+    positions.needsUpdate = true;
 
     this.group.position.set(pos.x, this.heightAt(pos.x, pos.z), pos.z);
     this.group.rotation.y = Math.atan2(tangent.x, tangent.z);
