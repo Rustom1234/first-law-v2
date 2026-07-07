@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { clamp, lerp } from '../lib/math';
+import { assetUrl } from '../lib/assetUrl';
 
 /** Martini the dog, running alongside the road for a stretch of the journey. Placeholder
  * photo slot: drop a photo at public/martini.png and she appears; until then this
@@ -18,7 +19,7 @@ export class Martini {
     to: { x: number; z: number },
     range: [number, number],
     heightAt: (x: number, z: number) => number,
-    src = '/martini.png',
+    src = assetUrl('martini.png'),
   ) {
     this.from = new THREE.Vector3(from.x, 0, from.z);
     this.to = new THREE.Vector3(to.x, 0, to.z);

@@ -1,3 +1,5 @@
+import { assetUrl } from '../lib/assetUrl';
+
 /** Muted-by-default ambient loop toggle. Points at a placeholder asset path: drop a
  * wind/campfire loop at public/ambient.mp3 and this starts working with no code changes.
  * If the file doesn't exist yet, play() rejects quietly and the toggle just stays inert. */
@@ -6,7 +8,7 @@ export class AmbientAudio {
   private readonly audio: HTMLAudioElement;
   private playing = false;
 
-  constructor(container: HTMLElement, src = '/ambient.mp3') {
+  constructor(container: HTMLElement, src = assetUrl('ambient.mp3')) {
     container.classList.add('ambient-audio');
 
     this.audio = new Audio(src);
