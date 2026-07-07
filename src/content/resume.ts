@@ -24,7 +24,7 @@ export const resume: ResumeData = {
     tagline: 'Computer Science @ Haverford and University of Pennsylvania',
     portrait: undefined, // TODO: path to a portrait image, e.g. "/portrait.jpg"
     bio: [
-      "I'm a computer science student at Haverford College and the University of Pennsylvania, with experience in AI and computational biology research. My interests sit at memory-efficient ML, computational biology, and AI safety.",
+      "I'm a computer science student at Haverford College and the University of Pennsylvania. I work on memory-efficient ML, computational biology, and AI safety.",
       'Outside of that: varsity cricket, guitar, and entirely too much fantasy fiction, hence the website.',
     ],
     email: 'rustommdubash@gmail.com',
