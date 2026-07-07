@@ -1,9 +1,9 @@
 import type { ResumeData } from './types';
 
 /**
- * Real content. A few things marked TODO are still gaps: an updated resume with more
- * complete experience/project details is coming soon, at which point this file gets a
- * real pass. Until then this is deliberately honest about what's known vs. placeholder.
+ * Sourced from the July 2026 resume plus prior conversation for details not on the
+ * resume (AIT Budapest, UWCSEA Dover, GitHub links). Remaining TODOs are real gaps:
+ * a repo link, an image, or a company logo not yet supplied.
  *
  * NOTE: a phone number is intentionally left off this public site (spam/privacy
  * default): email, LinkedIn, and GitHub are on the page. Say the word if you'd
@@ -12,6 +12,10 @@ import type { ResumeData } from './types';
  * Logos/images: university crests and city imagery are original, generated assets
  * (not scraped photos or official branding). Employer logos are NOT invented here;
  * those stay as initials placeholders until you supply the real files.
+ *
+ * A prior SpaceKnow entry was dropped: it isn't on the July 2026 resume, so rather
+ * than keep a "TODO: role title" placeholder live on the site, it's removed until
+ * there's real detail to add back.
  */
 export const resume: ResumeData = {
   profile: {
@@ -31,25 +35,34 @@ export const resume: ResumeData = {
     resumeUrl: '/resume.pdf',
   },
 
-  // TODO(rustom): a fuller resume is coming; ContinuServe/Equitech/Mathieson Lab/NUS
-  // below are real (from the June 2026 resume), UNMC and SpaceKnow are new entries
-  // you named but haven't detailed yet, placeholder until the update lands.
+  // Sourced from the July 2026 resume. Logos stay undefined (initials placeholder)
+  // until real company/lab marks are supplied; never invented here.
   experience: [
     {
       title: 'AI Solutions Engineer Intern',
       org: 'ContinuServe',
       logo: undefined, // TODO: real company logo file, not invented here
       period: 'June 2026 – Present',
-      blurb: 'Building a Financial Intelligence Agent (4-agent pipeline) automating P&L and balance-sheet reporting.',
-      tags: ['LLM Agents', 'Vector DBs', 'OpenAI/Claude APIs'],
+      blurb:
+        'Built a Financial Forecasting Agent (Claude + a custom MCP server) integrating NVIDIA KumoRFM and Meta Prophet for >97% accurate revenue and cashflow forecasts, deployed to the ContinuFlow AI Forecasting Hub.',
+      tags: ['Claude API', 'MCP', 'Forecasting'],
     },
     {
-      title: 'TODO: role title',
-      org: 'UNMC',
-      logo: undefined, // TODO: real company logo file, not invented here
-      period: 'TODO: dates',
-      blurb: 'TODO: one-line description, pending the updated resume.',
-      tags: ['TODO'],
+      title: 'Computational Biology Researcher',
+      org: 'Wan Lab, University of Nebraska Medical Center',
+      logo: undefined, // TODO: real lab logo file, not invented here
+      period: 'June 2026 – Present',
+      blurb:
+        'Studying automated cell-type annotation for single-cell RNA-seq data under Prof. Shibiao Wan, benchmarking against reference- and marker-based methods like SingleR, Garnett, and scDiagnostics.',
+      tags: ['Computational Biology', 'scRNA-seq'],
+    },
+    {
+      title: 'Teaching Assistant, Intro to CS & Data Science',
+      org: 'Haverford College',
+      logo: undefined,
+      period: 'Sept 2025 – Jan 2026',
+      blurb: 'Held weekly office hours supporting 80+ students in Python programming, algorithms, and data analysis.',
+      tags: ['Teaching', 'Python'],
     },
     {
       title: "Applied Data Institute Scholar '25",
@@ -57,7 +70,7 @@ export const resume: ResumeData = {
       logo: undefined, // TODO: real company logo file, not invented here
       period: 'Sept 2025 – Dec 2025',
       blurb:
-        'One of 16 fellows in a fully-funded global fellowship; built KPI dashboards and a RAG chatbot for water-utility managers across Uganda, Cameroon, Lesotho, and Malawi, impacting 5M+ citizens.',
+        'One of 16 fellows in a fully-funded ($9,500), 10-week global fellowship; built KPI dashboards and a RAG chatbot (ChromaDB) for African water-utility managers, impacting 5M+ citizens.',
       tags: ['RAG', 'ChromaDB', 'Dashboards'],
     },
     {
@@ -66,7 +79,7 @@ export const resume: ResumeData = {
       logo: undefined, // TODO: real company logo file, not invented here
       period: 'May 2025 – Aug 2025',
       blurb:
-        'Trained Transformer and long-context sequence models (including HyenaDNA-style sparse attention) in PyTorch on a 21GB genomic corpus, extending context length 12x over baseline Transformers.',
+        'Trained Transformer and long-context sequence models (including HyenaDNA-style sparse attention) in PyTorch, extending context length 12x over baseline Transformers.',
       tags: ['PyTorch', 'Transformers'],
     },
     {
@@ -74,17 +87,8 @@ export const resume: ResumeData = {
       org: 'National University of Singapore',
       logo: undefined, // TODO: real company logo file, not invented here
       period: 'June 2024 – Aug 2024',
-      blurb:
-        'Led data compilation and built web-scraping pipelines extracting 10K+ records for a study on salary incentives and political corruption in Indian state legislatures.',
+      blurb: 'Built a web-scraper extracting 10K+ financial records for a study on political corruption in Indian State Legislatures.',
       tags: ['Data', 'Web Scraping'],
-    },
-    {
-      title: 'TODO: role title',
-      org: 'SpaceKnow',
-      logo: undefined, // TODO: real company logo file, not invented here
-      period: 'TODO: dates',
-      blurb: 'TODO: one-line description, pending the updated resume.',
-      tags: ['TODO'],
     },
   ],
 
@@ -93,6 +97,14 @@ export const resume: ResumeData = {
   // (or `gh repo edit --visibility public` from an authenticated machine) for the
   // links below to resolve. PINN has no matching repo under this account yet.
   projects: [
+    {
+      title: 'Green Bone Protocol',
+      image: undefined, // TODO: an original generated illustration, jade-toned, matching the site's grimdark palette
+      blurb:
+        'A tiered multi-agent framework (inspired by Jade City by Fonda Lee) that routes tasks across models by capability, with a dedicated validation tier and a token-cost study of the accuracy-vs-cost tradeoff.',
+      tags: ['Anthropic API', 'Agent Orchestration'],
+      link: undefined, // TODO: add repo link once it's pushed/public
+    },
     {
       title: 'Residual-Boosted Transformer Ensembles',
       image: undefined, // TODO: "/projects/residual-boosted.jpg"
@@ -128,7 +140,8 @@ export const resume: ResumeData = {
     {
       title: 'Sparse-Attention Hyena',
       image: undefined, // TODO: "/projects/sparse-attention-hyena.jpg"
-      blurb: 'TODO: one-line description of this one beyond the Mathieson Lab work above.',
+      blurb:
+        'Extends the Mathieson Lab work: a HyenaDNA-style sparse-attention architecture for long-context genomic sequence modeling, reaching 12x the context length of a baseline Transformer.',
       tags: ['PyTorch', 'Sparse Attention'],
       link: 'https://github.com/Rustom1234/sparse-attention-hyena',
     },
