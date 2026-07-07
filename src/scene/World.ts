@@ -20,6 +20,9 @@ import { CricketBatter } from './CricketBatter';
 import { Martini } from './Martini';
 import { Library } from './Library';
 import { Campfire } from './Campfire';
+import { Whippet } from './Whippet';
+import { WorkCamp } from './WorkCamp';
+import { MageTree } from './MageTree';
 import { SECTIONS } from '../content/sections';
 import type { Section } from '../content/types';
 
@@ -47,6 +50,9 @@ export class World {
   readonly martini: Martini;
   readonly library: Library;
   readonly campfires: Campfire[];
+  readonly whippet: Whippet;
+  readonly workCamp: WorkCamp;
+  readonly mageTree: MageTree;
   private readonly runeStones: RuneStone[] = [];
 
   constructor(settings: QualitySettings, sections: Section[]) {
@@ -102,11 +108,24 @@ export class World {
     );
     this.scene.add(this.martini.group);
 
+    // The Great Library: now a monumental facade, pulled a touch further from the road
+    // so its full width reads as the camera comes over the rise.
     const paperSection = SECTIONS.find((s) => s.id === 'paper')!;
     this.library = new Library([paperSection.start, paperSection.end]);
     const paperWp = JOURNEY_WAYPOINTS[8];
-    this.library.placeAt(paperWp.x + 18, paperWp.z - 6, heightAt, Math.PI * 0.2);
+    // Placed well down the road from the chapter's start and only ~18 units off the
+    // path's line there, so the whole facade sits in frame while the camera approaches,
+    // angled back toward the oncoming camera.
+    this.library.placeAt(paperWp.x + 26, paperWp.z - 42, heightAt, -0.3);
     this.scene.add(this.library.group);
+
+    // A white whippet runs the road with you, keeping just ahead of the camera.
+    this.whippet = new Whippet(heightAt);
+    this.scene.add(this.whippet.group);
+
+    // Work Experience landmark: a big labor camp on the war plain, right of the road.
+    this.workCamp = new WorkCamp({ x: warWaypoint.x + 18, z: warWaypoint.z - 6 }, heightAt);
+    this.scene.add(this.workCamp.group);
 
     // Campfires mark the rest stops of the journey: one where the road begins, one among
     // the education waystones (a fire to study by), one at the war camp (where a bare
@@ -114,6 +133,18 @@ export class World {
     // so the journey ends at a fire rather than in the dark.
     const summit = JOURNEY_WAYPOINTS[JOURNEY_WAYPOINTS.length - 1];
     const educationWaypoint = JOURNEY_WAYPOINTS[REGION_WAYPOINT_INDEX.north];
+
+    // Education landmark: a great tree left of the road, a mage teaching beneath it.
+    // On the waystone plateau itself: terrain ridges hide anything placed further down
+    // the road, and the plateau is provably visible through the whole chapter (the
+    // campfire beside it reads from every angle). The school sits among the waystones.
+    this.mageTree = new MageTree(
+      { x: educationWaypoint.x - 5, z: educationWaypoint.z + 4 },
+      heightAt,
+    );
+    this.mageTree.group.scale.setScalar(1.2);
+    this.scene.add(this.mageTree.group);
+
     const fireSpots: { x: number; z: number }[] = [
       { x: JOURNEY_WAYPOINTS[0].x + 6, z: JOURNEY_WAYPOINTS[0].z + 4 },
       { x: educationWaypoint.x + 5, z: educationWaypoint.z + 5 },
@@ -286,6 +317,9 @@ export class World {
     this.library.update(progress);
     for (const fire of this.campfires) fire.update(elapsed);
     for (const stone of this.runeStones) stone.update(progress, elapsed);
+    this.whippet.update(progress, elapsed);
+    this.workCamp.update(elapsed);
+    this.mageTree.update(elapsed);
     return blend;
   }
 }
