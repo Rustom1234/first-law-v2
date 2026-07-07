@@ -17,7 +17,7 @@ import { Ambient } from './Ambient';
 import { CricketBatter } from './CricketBatter';
 import { Martini } from './Martini';
 import { Library } from './Library';
-import { GhostlyResume } from './GhostlyResume';
+import { Campfire } from './Campfire';
 import { SECTIONS } from '../content/sections';
 import type { Section } from '../content/types';
 
@@ -44,7 +44,7 @@ export class World {
   readonly cricketBatter: CricketBatter;
   readonly martini: Martini;
   readonly library: Library;
-  readonly ghostlyResume: GhostlyResume;
+  readonly campfires: Campfire[];
 
   constructor(settings: QualitySettings, sections: Section[]) {
     this.terrain = new Terrain(1337, settings.terrainSegments);
@@ -104,16 +104,21 @@ export class World {
     this.library.placeAt(paperWp.x + 18, paperWp.z - 6, heightAt, Math.PI * 0.2);
     this.scene.add(this.library.group);
 
-    // Positioned just short of the summit ridge (not past it) so the terrain the camera is
-    // still climbing over genuinely occludes it (real depth-tested 3D, not a CSS trick) until
-    // the rise animation lifts it into view near the very end of the contact section, close
-    // to where the Download Resume button and contact card sit on screen.
+    // Campfires mark the rest stops of the journey: one where the road begins, one at the
+    // war camp (where a bare flickering light used to stand in for a fire), one at the summit
+    // beside the hero, so the journey ends at a fire rather than in the dark.
     const summit = JOURNEY_WAYPOINTS[JOURNEY_WAYPOINTS.length - 1];
-    const resumeX = summit.x;
-    const resumeZ = summit.z - 22;
-    this.ghostlyResume = new GhostlyResume([0.85, 0.99], -40, 35);
-    this.ghostlyResume.placeAt(resumeX, resumeZ);
-    this.scene.add(this.ghostlyResume.group);
+    const fireSpots: { x: number; z: number }[] = [
+      { x: JOURNEY_WAYPOINTS[0].x + 6, z: JOURNEY_WAYPOINTS[0].z + 4 },
+      { x: warWaypoint.x + 2, z: warWaypoint.z + 2 },
+      { x: summit.x - 2, z: summit.z + 6 },
+    ];
+    this.campfires = fireSpots.map((spot, i) => {
+      const fire = new Campfire(i * 2.4);
+      fire.placeAt(spot.x, spot.z, heightAt);
+      this.scene.add(fire.group);
+      return fire;
+    });
   }
 
   private populateWarriors(settings: QualitySettings): void {
@@ -253,7 +258,7 @@ export class World {
     this.cricketBatter.update(progress);
     this.martini.update(progress, elapsed);
     this.library.update(progress);
-    this.ghostlyResume.update(progress);
+    for (const fire of this.campfires) fire.update(elapsed);
     return blend;
   }
 }

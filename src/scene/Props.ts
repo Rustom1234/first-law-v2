@@ -66,7 +66,7 @@ export class Props {
 
   constructor(maxRocks: number, maxTrees: number, maxBanners: number, maxGrass: number) {
     const rockGeometry = new THREE.DodecahedronGeometry(0.5, 0);
-    const rockMaterial = new THREE.MeshStandardMaterial({ color: '#3d3d3a', roughness: 1, flatShading: true });
+    const rockMaterial = new THREE.MeshStandardMaterial({ color: '#4a4238', roughness: 1, flatShading: true });
     this.rockMesh = new THREE.InstancedMesh(rockGeometry, rockMaterial, maxRocks);
     this.rockMesh.receiveShadow = true;
     this.rockMesh.castShadow = true;

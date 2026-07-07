@@ -18,8 +18,8 @@ export class Sky {
       side: THREE.BackSide,
       depthWrite: false,
       uniforms: {
-        uZenithColor: { value: new THREE.Color('#5a6570') },
-        uHorizonColor: { value: new THREE.Color('#b9c2c4') },
+        uZenithColor: { value: new THREE.Color('#6e5a40') },
+        uHorizonColor: { value: new THREE.Color('#e3c493') },
         uOffset: { value: 15 },
         uExponent: { value: 0.65 },
       },

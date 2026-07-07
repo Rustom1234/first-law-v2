@@ -22,6 +22,8 @@ export const resume: ResumeData = {
   profile: {
     name: 'Rustom Dubash',
     tagline: 'Computer Science @ Haverford and University of Pennsylvania',
+    intro:
+      "I like reading, and I like building things. The scenery here is borrowed from Joe Abercrombie's First Law books, one of my favorite worlds. You don't need to know them to walk the road: scroll on, and I'll show you around.",
     portrait: undefined, // TODO: path to a portrait image, e.g. "/portrait.jpg"
     bio: [
       "I'm a computer science student at Haverford College and the University of Pennsylvania. I work on memory-efficient ML, computational biology, and AI safety.",

@@ -120,6 +120,7 @@ export class OverlayManager {
     const card = el('section', `dispatch-card dispatch-card--${section.id} dispatch-card--${section.dataRef}`);
     card.setAttribute('aria-label', section.heading);
     card.appendChild(el('h2', 'dispatch-card__heading', section.heading));
+    if (section.flavor) card.appendChild(el('p', 'dispatch-card__flavor', section.flavor));
 
     const body = el('div', 'dispatch-card__body');
     card.appendChild(body);
@@ -154,6 +155,7 @@ export class OverlayManager {
   private renderProfile(body: HTMLElement, profile: Profile): void {
     body.appendChild(el('p', 'dispatch-name', profile.name));
     body.appendChild(el('p', 'dispatch-tagline', profile.tagline));
+    if (profile.intro) body.appendChild(el('p', 'dispatch-intro', profile.intro));
   }
 
   private renderAbout(body: HTMLElement, profile: Profile): void {
