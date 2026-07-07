@@ -1,33 +1,58 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { clamp, lerp } from '../lib/math';
+import { makeRng } from '../lib/rng';
 
 const SHELF_COLOR = new THREE.Color('#241a12');
+const STONE_COLOR = new THREE.Color('#5e5851');
 const BOOK_COLORS = ['#5c2e1f', '#4a3a1f', '#6b4a2a', '#7a3520', '#3a2a1a'];
 
-/** A tall bookshelf silhouette, built from a frame + a scatter of book-shaped boxes. */
-function buildShelfGeometry(): THREE.BufferGeometry {
-  const parts: THREE.BufferGeometry[] = [];
+/** One shelf wall: frame, boards, and its books merged into one geometry per book color,
+ * so a wall of hundreds of books costs a handful of draw calls. */
+function buildShelfWall(width: number, height: number, rows: number, rng: () => number): THREE.Group {
+  const wall = new THREE.Group();
 
-  const frame = new THREE.BoxGeometry(3.2, 4.2, 0.6);
-  frame.translate(0, 2.1, 0);
-  parts.push(frame);
-
-  for (let row = 0; row < 4; row++) {
-    const shelf = new THREE.BoxGeometry(3.0, 0.06, 0.55);
-    shelf.translate(0, 0.7 + row * 1.0, 0);
-    parts.push(shelf);
+  const frameParts: THREE.BufferGeometry[] = [];
+  const frame = new THREE.BoxGeometry(width, height, 1.1);
+  frame.translate(0, height / 2, 0);
+  frameParts.push(frame);
+  const rowHeight = (height - 1.2) / rows;
+  for (let row = 1; row <= rows; row++) {
+    const board = new THREE.BoxGeometry(width - 0.3, 0.12, 1.0);
+    board.translate(0, 0.6 + row * rowHeight, 0.1);
+    frameParts.push(board);
   }
+  const frameMaterial = new THREE.MeshStandardMaterial({ color: SHELF_COLOR, roughness: 0.95 });
+  const frameMesh = new THREE.Mesh(mergeGeometries(frameParts, false), frameMaterial);
+  frameMesh.castShadow = true;
+  frameMesh.receiveShadow = true;
+  wall.add(frameMesh);
 
-  return mergeGeometries(parts, false);
+  const byColor: THREE.BufferGeometry[][] = BOOK_COLORS.map(() => []);
+  for (let row = 0; row < rows; row++) {
+    let x = -width / 2 + 0.5;
+    while (x < width / 2 - 0.5) {
+      const book = new THREE.BoxGeometry(0.5, 0.8, 0.16);
+      const scaleY = 0.8 + rng() * 0.35;
+      book.scale(1, scaleY, 1);
+      book.rotateZ((rng() - 0.5) * 0.07);
+      book.translate(x, 0.72 + row * rowHeight + (0.8 * scaleY) / 2, 0.5);
+      byColor[Math.floor(rng() * BOOK_COLORS.length)].push(book);
+      x += 0.58 + rng() * 0.12;
+    }
+  }
+  byColor.forEach((geometries, i) => {
+    if (!geometries.length) return;
+    const material = new THREE.MeshStandardMaterial({ color: BOOK_COLORS[i], roughness: 0.85 });
+    wall.add(new THREE.Mesh(mergeGeometries(geometries, false), material));
+  });
+
+  return wall;
 }
 
-function buildBookGeometry(): THREE.BufferGeometry {
-  return new THREE.BoxGeometry(0.22, 0.32, 0.05);
-}
-
-/** The chronicler's "stumble upon a great library" moment: a bookshelf, a scatter of
- * shelved books, and one book that tumbles free as the camera passes, landing near your feet. */
+/** The Research chapter's landmark, grown into a true Great Library: a stone plinth carrying
+ * a monumental central shelf wall flanked by two angled wings, framed by columns and a lintel,
+ * with the old gag intact: one oversized book still tumbles free as the camera passes. */
 export class Library {
   readonly group = new THREE.Group();
   private readonly fallingBook: THREE.Mesh;
@@ -40,35 +65,43 @@ export class Library {
     this.rangeStart = range[0];
     this.rangeEnd = range[1];
 
-    const shelfMaterial = new THREE.MeshStandardMaterial({ color: SHELF_COLOR, roughness: 0.95 });
-    const shelf = new THREE.Mesh(buildShelfGeometry(), shelfMaterial);
-    shelf.castShadow = true;
-    shelf.receiveShadow = true;
-    this.group.add(shelf);
+    const rng = makeRng(1204);
+    const stoneMaterial = new THREE.MeshStandardMaterial({ color: STONE_COLOR, roughness: 1, flatShading: true });
 
-    const bookGeometry = buildBookGeometry();
-    for (let row = 0; row < 4; row++) {
-      const count = 8 + Math.floor(Math.random() * 3);
-      let x = -1.35;
-      for (let i = 0; i < count && x < 1.35; i++) {
-        const material = new THREE.MeshStandardMaterial({
-          color: BOOK_COLORS[Math.floor(Math.random() * BOOK_COLORS.length)],
-          roughness: 0.85,
-        });
-        const book = new THREE.Mesh(bookGeometry, material);
-        book.position.set(x, 0.88 + row * 1.0, 0.02);
-        book.rotation.z = (Math.random() - 0.5) * 0.08;
-        book.scale.y = 0.85 + Math.random() * 0.3;
-        this.group.add(book);
-        x += 0.24 + Math.random() * 0.06;
-      }
+    const plinth = new THREE.Mesh(new THREE.BoxGeometry(26, 1.0, 9), stoneMaterial);
+    plinth.position.y = 0.3;
+    plinth.receiveShadow = true;
+    this.group.add(plinth);
+
+    const deck = 0.8;
+
+    const centerWall = buildShelfWall(9.5, 13, 7, rng);
+    centerWall.position.set(0, deck, -1.2);
+    this.group.add(centerWall);
+
+    for (const side of [-1, 1]) {
+      const wing = buildShelfWall(7, 10, 6, rng);
+      wing.position.set(side * 8.6, deck, 0.4);
+      wing.rotation.y = side * -0.38;
+      this.group.add(wing);
     }
 
+    for (const side of [-1, 1]) {
+      const column = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.7, 14, 7), stoneMaterial);
+      column.position.set(side * 5.6, deck + 7, 2.4);
+      column.castShadow = true;
+      this.group.add(column);
+    }
+    const lintel = new THREE.Mesh(new THREE.BoxGeometry(13.4, 1.3, 1.8), stoneMaterial);
+    lintel.position.set(0, deck + 14.4, 2.4);
+    lintel.castShadow = true;
+    this.group.add(lintel);
+
     const fallingMaterial = new THREE.MeshStandardMaterial({ color: '#8f6a3a', roughness: 0.8 });
-    this.fallingBook = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.45, 0.08), fallingMaterial);
+    this.fallingBook = new THREE.Mesh(new THREE.BoxGeometry(0.85, 1.1, 0.2), fallingMaterial);
     this.fallingBook.castShadow = true;
-    this.startPos = new THREE.Vector3(0.9, 3.1, 0.4);
-    this.endPos = new THREE.Vector3(1.4, 0.22, 1.6);
+    this.startPos = new THREE.Vector3(2.8, 10.6, 0.4);
+    this.endPos = new THREE.Vector3(5.2, 1.6, 5.2);
     this.fallingBook.position.copy(this.startPos);
     this.group.add(this.fallingBook);
   }
