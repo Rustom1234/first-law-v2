@@ -3,7 +3,7 @@ import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js
 import { clamp, lerp } from '../lib/math';
 
 const SHELF_COLOR = new THREE.Color('#241a12');
-const BOOK_COLORS = ['#5c2e1f', '#2e3a1f', '#1f2a3a', '#4a2e4a', '#3a2a1a'];
+const BOOK_COLORS = ['#5c2e1f', '#4a3a1f', '#6b4a2a', '#7a3520', '#3a2a1a'];
 
 /** A tall bookshelf silhouette, built from a frame + a scatter of book-shaped boxes. */
 function buildShelfGeometry(): THREE.BufferGeometry {

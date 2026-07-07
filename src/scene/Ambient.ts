@@ -26,7 +26,6 @@ interface Crow {
 export class Ambient {
   readonly group = new THREE.Group();
   private readonly crows: Crow[] = [];
-  private readonly campfire: THREE.PointLight;
   private readonly center: THREE.Vector3;
 
   constructor(center: { x: number; z: number; y: number }, count = 6) {
@@ -44,10 +43,6 @@ export class Ambient {
       this.crows.push({ sprite, radius, speed, phase, height });
       this.group.add(sprite);
     }
-
-    this.campfire = new THREE.PointLight('#ff8c42', 3.5, 22, 2);
-    this.campfire.position.set(center.x + 2, center.y + 0.6, center.z + 2);
-    this.group.add(this.campfire);
   }
 
   update(elapsed: number): void {
@@ -59,8 +54,5 @@ export class Ambient {
         this.center.z + Math.sin(angle) * crow.radius,
       );
     }
-
-    const flicker = 3.2 + Math.sin(elapsed * 9) * 0.4 + Math.sin(elapsed * 23.7) * 0.25;
-    this.campfire.intensity = flicker;
   }
 }

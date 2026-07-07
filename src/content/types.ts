@@ -1,6 +1,9 @@
 export interface Profile {
   name: string;
   tagline: string;
+  /** A short plain-spoken line for visitors who don't know the source material: why the site
+   * looks like this and what it says about the author. Shown on the welcome card. */
+  intro?: string;
   portrait?: string;
   bio: string[];
   email?: string;
@@ -62,6 +65,8 @@ export interface Section {
   region: string;
   dataRef: DataRef;
   heading: string;
+  /** One in-world line under the heading, committing to the First Law story framing. */
+  flavor?: string;
   /** Scroll-progress band [start, end] this section is meant to occupy, with crossfade widths at each edge. */
   start: number;
   end: number;

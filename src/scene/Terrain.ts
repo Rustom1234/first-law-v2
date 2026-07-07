@@ -7,11 +7,11 @@ export const TERRAIN_START_Z = 60;
 export const TERRAIN_END_Z = -595;
 const TERRAIN_DEPTH = TERRAIN_START_Z - TERRAIN_END_Z;
 
-const SNOW = new THREE.Color('#c9d3d6');
-const ROCK = new THREE.Color('#4a4a4d');
-const MOOR = new THREE.Color('#4f5a45');
-const MUD = new THREE.Color('#372e22');
-const TRACK = new THREE.Color('#241d15');
+const SNOW = new THREE.Color('#e9ddc4');
+const ROCK = new THREE.Color('#57493c');
+const MOOR = new THREE.Color('#6a5f3a');
+const MUD = new THREE.Color('#3d2f1f');
+const TRACK = new THREE.Color('#2a1f13');
 
 export class Terrain {
   readonly mesh: THREE.Mesh;

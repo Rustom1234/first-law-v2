@@ -1,6 +1,6 @@
 :root {
   color-scheme: dark;
-  --region-accent: #9fb0b8;
+  --region-accent: #dcb576;
   --font-display: 'Cinzel', Georgia, serif;
   --font-body: Georgia, 'Times New Roman', serif;
 }
@@ -13,8 +13,8 @@ html,
 body {
   margin: 0;
   padding: 0;
-  background: #23231f;
-  color: #e7e5df;
+  background: #211812;
+  color: #ede5d8;
   font-family: var(--font-body);
   font-size: 18px;
 }

@@ -12,7 +12,7 @@ export class Lighting {
   constructor(shadowsEnabled: boolean, shadowMapSize: number) {
     this.group = new THREE.Group();
 
-    this.sun = new THREE.DirectionalLight('#e8c9a0', 1.6);
+    this.sun = new THREE.DirectionalLight('#ffd39a', 1.7);
     this.sun.castShadow = shadowsEnabled;
     if (shadowsEnabled) {
       this.sun.shadow.mapSize.set(shadowMapSize, shadowMapSize);
@@ -26,10 +26,10 @@ export class Lighting {
     }
     this.group.add(this.sun, this.sun.target);
 
-    this.hemi = new THREE.HemisphereLight('#6d7a82', '#1c1a16', 0.55);
+    this.hemi = new THREE.HemisphereLight('#c9a878', '#33241a', 0.5);
     this.group.add(this.hemi);
 
-    this.rim = new THREE.DirectionalLight('#a9c9d6', 0.7);
+    this.rim = new THREE.DirectionalLight('#f2b880', 0.6);
     this.rim.position.set(-SUN_DIRECTION.x, 6, -SUN_DIRECTION.z).normalize().multiplyScalar(40);
     this.group.add(this.rim, this.rim.target);
   }
