@@ -111,7 +111,7 @@ export class World {
     const summit = JOURNEY_WAYPOINTS[JOURNEY_WAYPOINTS.length - 1];
     const resumeX = summit.x;
     const resumeZ = summit.z - 22;
-    this.ghostlyResume = new GhostlyResume([0.88, 0.99], -40, 35);
+    this.ghostlyResume = new GhostlyResume([0.85, 0.99], -40, 35);
     this.ghostlyResume.placeAt(resumeX, resumeZ);
     this.scene.add(this.ghostlyResume.group);
   }

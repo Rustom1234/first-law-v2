@@ -32,7 +32,9 @@ export class GhostlyResume {
     try {
       const pdf = await pdfjsLib.getDocument({ url: src }).promise;
       const page = await pdf.getPage(1);
-      const viewport = page.getViewport({ scale: 2.2 });
+      // Rasterized well above the sprite's on-screen size at the final camera distance so
+      // text stays crisp instead of upscaled/hazy; no mipmaps so minification never blurs it.
+      const viewport = page.getViewport({ scale: 5.5 });
 
       const canvas = document.createElement('canvas');
       canvas.width = viewport.width;
@@ -44,10 +46,14 @@ export class GhostlyResume {
 
       const texture = new THREE.CanvasTexture(canvas);
       texture.colorSpace = THREE.SRGBColorSpace;
+      texture.generateMipmaps = false;
+      texture.minFilter = THREE.LinearFilter;
+      texture.magFilter = THREE.LinearFilter;
+      texture.anisotropy = 8;
       const material = new THREE.SpriteMaterial({
         map: texture,
         transparent: true,
-        opacity: 0.08,
+        opacity: 0.25,
         depthWrite: false,
         fog: false,
       });
@@ -72,6 +78,6 @@ export class GhostlyResume {
     const span = this.rangeEnd - this.rangeStart;
     const t = span > 0 ? clamp((progress - this.rangeStart) / span, 0, 1) : 0;
     this.sprite.position.y = this.baseY + t * this.riseHeight;
-    (this.sprite.material as THREE.SpriteMaterial).opacity = 0.06 + t * 0.12;
+    (this.sprite.material as THREE.SpriteMaterial).opacity = 0.25 + t * 0.6;
   }
 }
