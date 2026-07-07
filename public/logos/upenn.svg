@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" role="img" aria-label="Stylized university crest">
+  <defs>
+    <linearGradient id="shieldFace" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3a1414"/>
+      <stop offset="55%" stop-color="#241012"/>
+      <stop offset="100%" stop-color="#120a0c"/>
+    </linearGradient>
+    <linearGradient id="shieldEdge" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#6b1f1f"/>
+      <stop offset="100%" stop-color="#2a1010"/>
+    </linearGradient>
+    <radialGradient id="vignette" cx="50%" cy="35%" r="70%">
+      <stop offset="0%" stop-color="#000000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.55"/>
+    </radialGradient>
+  </defs>
+
+  <!-- outer shield silhouette -->
+  <path d="M100 12
+           L168 34
+           L168 96
+           C168 140 140 172 100 190
+           C60 172 32 140 32 96
+           L32 34
+           Z"
+        fill="url(#shieldEdge)" stroke="#0a0606" stroke-width="3"/>
+
+  <!-- inner shield face, inset -->
+  <path d="M100 24
+           L156 42
+           L156 96
+           C156 133 134 159 100 175
+           C66 159 44 133 44 96
+           L44 42
+           Z"
+        fill="url(#shieldFace)" stroke="#1a0d0d" stroke-width="2"/>
+
+  <!-- horizontal dividing bands, evoking heraldic fess bars -->
+  <path d="M44 76 L156 76 L156 92 L44 92 Z" fill="#171012" opacity="0.85"/>
+  <path d="M44 118 L156 118 L156 134 L44 134 Z" fill="#171012" opacity="0.85"/>
+
+  <!-- chevrons for texture, muted steel-blue accent -->
+  <path d="M100 30 L136 60 L128 68 L100 46 L72 68 L64 60 Z" fill="#242c33" opacity="0.9"/>
+
+  <!-- central monogram P -->
+  <g fill="#8c8072">
+    <path d="M84 56
+             h20
+             c14 0 22 8 22 20
+             c0 12 -8 20 -22 20
+             h-8
+             v34
+             h-12
+             Z
+             M96 66
+             v20
+             h6
+             c7 0 11 -4 11 -10
+             c0 -6 -4 -10 -11 -10
+             Z"/>
+  </g>
+
+  <!-- laurel accents at base -->
+  <path d="M76 150 C70 158 68 166 72 174" stroke="#4a3f30" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M124 150 C130 158 132 166 128 174" stroke="#4a3f30" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M76 150 L82 146 M74 158 L81 155 M75 166 L82 164" stroke="#4a3f30" stroke-width="2" stroke-linecap="round"/>
+  <path d="M124 150 L118 146 M126 158 L119 155 M125 166 L118 164" stroke="#4a3f30" stroke-width="2" stroke-linecap="round"/>
+
+  <rect x="0" y="0" width="200" height="200" fill="url(#vignette)"/>
+</svg>

@@ -74,22 +74,16 @@
   margin: 0;
 }
 
-.dispatch-scroll {
-  max-height: 48vh;
-  overflow-y: auto;
-  padding-right: 0.4rem;
-  scrollbar-width: thin;
-  scrollbar-color: var(--region-accent) transparent;
+/* The list's position is driven directly by scroll progress (see OverlayManager.update),
+ * not a native scrollbar: one scroll gesture moves the journey and the list together. */
+.dispatch-viewport {
+  height: 50vh;
+  overflow: hidden;
+  mask-image: linear-gradient(to bottom, transparent, black 6%, black 94%, transparent);
 }
 
-.dispatch-scroll::-webkit-scrollbar {
-  width: 6px;
-}
-
-.dispatch-scroll::-webkit-scrollbar-thumb {
-  background: var(--region-accent);
-  border-radius: 3px;
-  opacity: 0.6;
+.dispatch-track {
+  will-change: transform;
 }
 
 .dispatch-item {
@@ -178,6 +172,16 @@
   color: var(--region-accent);
 }
 
+.dispatch-item__logo--trial {
+  position: absolute;
+  left: 0;
+  top: 0.1rem;
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 50%;
+  filter: grayscale(0.3) contrast(1.1);
+}
+
 .dispatch-item__content {
   flex: 1;
   min-width: 0;
@@ -243,6 +247,26 @@
   color: var(--region-accent);
 }
 
+.contact-resume-link {
+  display: block;
+  margin: 1.4rem auto 0;
+  width: fit-content;
+  padding: 0.55rem 1.2rem;
+  border: 1px solid var(--region-accent);
+  border-radius: 3px;
+  color: var(--region-accent);
+  text-decoration: none;
+  font-size: 0.95rem;
+  letter-spacing: 0.03em;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.contact-resume-link:hover,
+.contact-resume-link:focus-visible {
+  background-color: var(--region-accent);
+  color: #14130f;
+}
+
 /* About / Chronicler */
 
 .about-layout {
@@ -280,11 +304,7 @@
 }
 
 .about-text {
-  max-height: 55vh;
-  overflow-y: auto;
-  padding-right: 0.4rem;
-  scrollbar-width: thin;
-  scrollbar-color: var(--region-accent) transparent;
+  max-width: 26rem;
 }
 
 .about-bio {
@@ -311,11 +331,11 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
   gap: 1rem;
-  max-height: 58vh;
-  overflow-y: auto;
-  padding-right: 0.4rem;
-  scrollbar-width: thin;
-  scrollbar-color: var(--region-accent) transparent;
+  will-change: transform;
+}
+
+.dispatch-card--projects .dispatch-viewport {
+  height: 62vh;
 }
 
 .trophy-card {
@@ -395,6 +415,14 @@
   flex-direction: column;
   align-items: center;
   gap: 1rem;
+}
+
+.relic-graph {
+  max-width: 100%;
+  max-height: 14rem;
+  border-radius: 4px;
+  border: 1px solid rgba(231, 229, 223, 0.2);
+  filter: grayscale(0.15) contrast(1.05);
 }
 
 .relic-seal {
@@ -605,68 +633,6 @@
   border-color: var(--region-accent);
 }
 
-/* Resume scroll finale */
-
-.resume-scroll {
-  position: fixed;
-  bottom: 0;
-  left: 50%;
-  transform: translate(-50%, 100%);
-  opacity: 0;
-  z-index: 15;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-}
-
-.resume-scroll__rod {
-  width: min(30rem, 80vw);
-  height: 0.9rem;
-  border-radius: 999px;
-  background: linear-gradient(180deg, #c9a765, #7a5f2f);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-}
-
-.resume-scroll__body {
-  width: min(30rem, 80vw);
-  margin-top: -0.2rem;
-  padding: 2rem 2rem 2.5rem;
-  background: linear-gradient(180deg, #e9d9ad, #d8c290);
-  border-radius: 0 0 10px 10px;
-  box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.4);
-  text-align: center;
-  pointer-events: auto;
-}
-
-.resume-scroll__heading {
-  margin: 0 0 1.2rem;
-  font-family: var(--font-display);
-  font-size: 1.1rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: #3a2e18;
-}
-
-.resume-scroll__button {
-  display: inline-block;
-  padding: 0.75rem 1.6rem;
-  background: #2a2018;
-  color: #e9d9ad;
-  font-family: var(--font-display);
-  font-size: 0.95rem;
-  letter-spacing: 0.05em;
-  text-decoration: none;
-  border-radius: 4px;
-  transition: transform 0.15s ease;
-}
-
-.resume-scroll__button:hover,
-.resume-scroll__button:focus-visible {
-  transform: translateY(-2px);
-}
-
 .rune-track {
   position: fixed;
   right: 1.75rem;
@@ -774,7 +740,14 @@
 
   .trophy-grid {
     grid-template-columns: 1fr;
-    max-height: 50vh;
+  }
+
+  .dispatch-viewport {
+    height: 42vh;
+  }
+
+  .dispatch-card--projects .dispatch-viewport {
+    height: 48vh;
   }
 
   .rune-track {
@@ -789,9 +762,5 @@
   .ambient-audio {
     bottom: 1rem;
     right: 1rem;
-  }
-
-  .resume-scroll__body {
-    padding: 1.4rem 1.4rem 1.8rem;
   }
 }
