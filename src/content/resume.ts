@@ -95,6 +95,38 @@ export const resume: ResumeData = {
 
   projects: [
     {
+      title: 'memsub - Local-first memory layer for AI agents',
+      image: assetUrl('projects/memsub-bridges.png'),
+      blurb:
+        "A local-first, cloud-free memory layer for AI agents that beats independently reproduced mem0 numbers on LOCOMO while running entirely on SQLite. Its standout feature: published, reproducible memory-poisoning attack and defense numbers, cutting a disguised-fact attack from 98.7% success to 0% with no loss of legitimate recall.",
+      tags: ['Python', 'SQLite', 'Information Retrieval (BM25 + dense + RRF)', 'MCP', 'LLM Evaluation', 'HMAC Provenance / Security'],
+      link: undefined, // TODO: add repo link once it's public
+    },
+    {
+      title: 'Nightshift - Autonomous overnight coding daemon',
+      image: assetUrl('projects/nightshift-digest.png'),
+      blurb:
+        "An open-source overnight coding daemon that sandboxes LLM agents with real, kernel-enforced (Landlock + seccomp/BPF) unprivileged isolation, and never trusts a model's word that a test passed, only the harness's own exit-code check. Proven with sandbox-escape tests and an honest bug-hunt run that caught 1 of 5 planted bugs end to end.",
+      tags: ['Python', 'Autonomous LLM Agents', 'Linux Sandboxing (Landlock, seccomp/BPF)', 'Systems', 'Verification'],
+      link: undefined, // TODO: add repo link once it's public
+    },
+    {
+      title: 'The Serial - Long-form narrative generation engine',
+      image: assetUrl('projects/serial-reader.png'),
+      blurb:
+        "A narrative-generation engine that solves long-horizon consistency for a chapter-by-chapter fantasy saga by moving state out of the model's context window and into SQLite, a character graph, an open-threads table, and a setups/payoffs ledger. A two-pass generate-then-audit loop plus deterministic craft guards keep an inherently non-deterministic generator in line across 11+ chapters.",
+      tags: ['Python', 'LLM Engineering', 'Stateful Pipeline Design', 'SQLite', 'Continuity Management'],
+      link: undefined, // TODO: add repo link once it's public
+    },
+    {
+      title: 'book-dna - Recommender + a study on narrative shape',
+      image: assetUrl('projects/bookdna.png'),
+      blurb:
+        "A book recommender over ~20,000 books and ~62M reader co-read signals, and a pre-registered research study asking whether a book's narrative shape predicts what readers actually co-love. The honest answer: mostly no, order-free matching beats trajectory matching at matched information, a negative result reported in full rather than dressed up.",
+      tags: ['Python', 'Recommender Systems', 'soft-DTW / Sequence Modeling', 'ML Evaluation', 'FastAPI'],
+      link: undefined, // TODO: add repo link once it's public
+    },
+    {
       title: 'Green Bone Protocol',
       image: assetUrl('images/greenbone.png'),
       blurb:
